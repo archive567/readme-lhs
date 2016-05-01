@@ -56,6 +56,10 @@ readme.lhs is built as an executable, can be insta loaded into ghci, and comes a
 filewatcher '**/*.{lhs,hs,cabal}' 'stack build && echo "built" && ./.stack-work/install/x86_64-osx/nightly-2016-04-29/7.10.3/bin/readme | pandoc -f markdown+lhs -t html -o readme-out.html && pandoc -f markdown+lhs -i readme.lhs -t html -o readme.html && echo "run"'
 ~~~
 
+~~~
+pandoc -f markdown+lhs -t markdown -i readme.lhs -o readme.md
+~~~
+
 usage
 ---
 
