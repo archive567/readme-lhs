@@ -1,0 +1,20 @@
+<p><link rel="stylesheet" href="other/lhs.css"></p>
+<h1 id="readme-lhs">readme-lhs</h1>
+<p><a href="https://travis-ci.org/tonyday567/readme-lhs"><img src="https://travis-ci.org/tonyday567/readme-lhs.png" alt="Build Status" /></a></p>
+<h2 id="readme.lhs">readme.lhs</h2>
+<p>Using readme.lhs as a centralizing feature of haskell hacking.</p>
+<h2 id="usage">usage</h2>
+<pre><code>stack new projectname readme-lhs
+cd projectname
+&lt;&lt;edit readme.lhs&gt;&gt;
+stack build</code></pre>
+<p><code>stack solve</code> and <code>stack build</code> if anything goes wrong.</p>
+<p>The resultant workflow tends to be conducive to very tight coding loops.</p>
+<p>To build &amp; run:</p>
+<pre><code>stack build &amp;&amp; echo &quot;built&quot; &amp;&amp; ./.stack-work/install/x86_64-osx/lts-5.13/7.10.3/bin/readme</code></pre>
+<p>Build, run, render output, and render readme.lhs on file changes.</p>
+<pre><code>filewatcher &#39;**/*.{lhs,hs,cabal}&#39; &#39;stack build &amp;&amp; echo &quot;built&quot; &amp;&amp; ./.stack-work/install/x86_64-osx/nightly-2016-04-29/7.10.3/bin/readme | pandoc -f markdown+lhs -t html -o readme-out.html &amp;&amp; pandoc -f markdown+lhs -i readme.lhs -t html -o readme.html &amp;&amp; echo &quot;run&quot;&#39;</code></pre>
+<div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE NoImplicitPrelude #-}</span>
+<span class="kw">import </span><span class="dt">Protolude</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> print <span class="st">&quot;readme.lhs template&quot;</span></code></pre></div>
