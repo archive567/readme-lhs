@@ -43,16 +43,38 @@ Build, run, render output and readme.lhs, and send to blog.
 ~~~
 filewatcher '**/*.{lhs,hs,cabal}' 'stack build && echo "built" && ./.stack-work/install/x86_64-osx/nightly-2016-04-30/7.10.3/bin/readme | pandoc -f markdown+lhs -t html -o ~/git/tonyday567.github.io/readme-lhs-out.html && pandoc -f markdown+lhs -i readme.lhs -t html -o ~/git/tonyday567.github.io/readme-lhs.html && echo "run"'
 ~~~
+
+Markdown
+---
+
+Markdown-awareness in stdout output brings an ability to:
+
+1. print formulae that will be rendered downstream using (mathjax)[https://kerzol.github.io/markdown-mathjax/editor.html]
+2. Include formulae in the literate bit of an lhs
+3. Create embedded content such as charts
+
+
+R&D loop with stack and pandoc
+---
+
+ghci runs at a few orders of magnitude slower than compiled code, so I usually just have one `stack ghci` for mucking around.  The tight loop that you need for both numerics and output debugging is something like...
+
+The loop encourages markdown-friendly stdout, readable at the command line but renders out of the box in a local browser and eventually on github.  It also allows space between the concern of getting code working from the numerics themselves - as an output True with no code visible.
+
+Best of all, you liberate your functional feminist mind from the analytic industrial complex; a patriach of guidewires that starts with notebooks, guis, propriatery productivity sinkholes (excel, agile: oi!), and then funnels through alpha male power channels of science, business and social media.
+
+`readme.lhs` literately says I want you to read and run my literate haskell code. My demographic is nailed, I have charts, it's published.
+
  
 raw template
 ---
 
-The template candidate sits [here](https://github.com/tonyday567/readme-lhs/blob/master/readme-lhs.hsfiles) and stack recognizes template files locally at the top level of the project.
-
-
+The template candidate sits [here](https://github.com/tonyday567/readme-lhs/blob/master/readme-lhs.hsfiles).  You can always just drop a template in local.
 
 code
 ---
+
+[protolude](http://www.stephendiehl.com/posts/protolude.html)
 
 > {-# LANGUAGE NoImplicitPrelude #-}
 > import Protolude
@@ -60,9 +82,6 @@ code
 > main :: IO ()
 > main = do
 >   print "<h1>readme.lhs output</h1>"
->   print ""
->   
-
 
 Like many, I've done my time in cabal hell - discovered that there was a gap in version coverage in one of the 127 dependencies throwing the resolver into delusions of downgrading lens to 0.0.1.  And doing this under the hammer of a closing sprint when you've spent months talking up haskell and promising it's ready for production... (cabal hell flashback).
 
@@ -77,3 +96,4 @@ So I started to refactor my process, read up on templates, and have worked towar
 The workflow that emerges from usage of the template has low margin cost to prioritise any point in the project space.  readme.lhs renders well in github, and is radiant as the readme.md that results from `pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md`. More people will read your readme.md's than any blog you write (if you're not one of the superstars).
 
 readme.lhs is built as an executable, can be insta loaded into ghci, and comes armed with the [protolude](https://github.com/sdiehl/protolude). Never again will I use Strings, commit code with undefined, or have to check which `foldMap` is in scope.
+
