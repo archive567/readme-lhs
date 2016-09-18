@@ -1,7 +1,7 @@
 name:                  readme-lhs
 version:               0.1.0.0
-synopsis:              TODO Initial project template from stack
-description:           readme.lhs
+synopsis:              See readme.lhs
+description:           See readme.lhs
 homepage:              https://github.com/tonyday567/readme-lhs
 license:               BSD3
 license-file:          LICENSE
@@ -12,31 +12,55 @@ category:
 build-type:            Simple
 cabal-version:         >=1.10
 
-library
-  default-language:    Haskell2010
-  ghc-options:         -Wall
-  hs-source-dirs:      src
-  exposed-modules:     Lib
-  build-depends:       base >= 4.7 && < 5
-
 executable readme
   default-language:    Haskell2010
   ghc-options:         -O2
-                       -funbox-strict-fields
-                       -fforce-recomp
-                       -threaded
-                       -rtsopts
-                       -with-rtsopts=-N
   hs-source-dirs:      ./
   main-is:             readme.lhs
   build-depends:       base
                      , protolude
-                     , readme-lhs
+                     , text
+                     , foldl
+  default-extensions:
+      NoImplicitPrelude
+    , ApplicativeDo
+    , BangPatterns
+    , BinaryLiterals
+    , DeriveFoldable
+    , DeriveFunctor
+    , DeriveGeneric
+    , DeriveTraversable
+    , DisambiguateRecordFields
+    , DuplicateRecordFields
+    , EmptyCase
+    , FlexibleContexts
+    , FlexibleInstances
+    , FunctionalDependencies
+    , GADTSyntax
+    , InstanceSigs
+    , KindSignatures
+    , LambdaCase
+    , MonadComprehensions
+    , MultiParamTypeClasses
+    , MultiWayIf
+    , NegativeLiterals
+    , OverloadedStrings
+    , ParallelListComp
+    , PartialTypeSignatures
+    , PatternSynonyms
+    , RankNTypes
+    , RecordWildCards
+    , RecursiveDo
+    , ScopedTypeVariables
+    , TupleSections
+    , TypeApplications
+    , TypeFamilies
+    , TypeOperators
 
 executable lhs
   hs-source-dirs:      app
   main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , bytestring
                      , comonad
@@ -47,7 +71,44 @@ executable lhs
                      , optparse-applicative
                      , filepath
                      , cmdargs
+                     , foldl
+                     , protolude
 
+  default-extensions:
+      NoImplicitPrelude
+    , ApplicativeDo
+    , BangPatterns
+    , BinaryLiterals
+    , DeriveFoldable
+    , DeriveFunctor
+    , DeriveGeneric
+    , DeriveTraversable
+    , DisambiguateRecordFields
+    , DuplicateRecordFields
+    , EmptyCase
+    , FlexibleContexts
+    , FlexibleInstances
+    , FunctionalDependencies
+    , GADTSyntax
+    , InstanceSigs
+    , KindSignatures
+    , LambdaCase
+    , MonadComprehensions
+    , MultiParamTypeClasses
+    , MultiWayIf
+    , NegativeLiterals
+    , OverloadedStrings
+    , ParallelListComp
+    , PartialTypeSignatures
+    , PatternSynonyms
+    , RankNTypes
+    , RecordWildCards
+    , RecursiveDo
+    , ScopedTypeVariables
+    , TupleSections
+    , TypeApplications
+    , TypeFamilies
+    , TypeOperators
   default-language:    Haskell2010
 
 source-repository head

@@ -4,24 +4,11 @@
 
 [![Build Status](https://travis-ci.org/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}.png)](https://travis-ci.org/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}})
 
-readme.lhs
+{{name}}
 ---
-
-This template targets a library build together with an executable based on the readme.lhs file which also doubles as the main documentation and early testing point for the project.
 
 usage
 ---
-
-~~~
-stack new projectname readme-lhs
-cd projectname
-<<edit readme.lhs>>
-stack build
-~~~
-
-`stack solve` and `stack build` if anything goes wrong.
-
-The resultant workflow tends to be conducive to very tight coding loops.
 
 To build & run:
 
@@ -29,25 +16,22 @@ To build & run:
 stack install && readme
 ~~~
 
-Build, run, render output, and render readme.lhs on file changes. 
+Build, run, and render readme.lhs as html
 
 ~~~
-filewatcher '**/*.{lhs,hs,cabal}' 'stack install && echo "built" && readme | pandoc -f markdown+lhs -t html -o readme-out.html && pandoc -f markdown+lhs -i readme.lhs -t html -o readme.html && echo "run"'
+stack install && readme && pandoc -f markdown+lhs -i readme.lhs -t html -o readme.html
 ~~~
 
-
-> {-# LANGUAGE NoImplicitPrelude #-}
 > import Protolude
-
+>
 > main :: IO ()
-> main = print "readme.lhs template"
-> 
+> main = print ("ok" :: Text)
 
 {-# START_FILE {{name}}.cabal #-}
 name:                  {{name}}
 version:               0.1.0.0
-synopsis:              TODO Initial project template from stack
-description:           readme.lhs
+synopsis:              See readme.lhs
+description:           See readme.lhs
 homepage:              https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}
 license:               BSD3
 license-file:          LICENSE
@@ -61,9 +45,44 @@ cabal-version:         >=1.10
 library
   default-language:    Haskell2010
   ghc-options:         -Wall
-  hs-source-dirs:      src
-  exposed-modules:     Lib
+  hs-source-dirs:      
+  exposed-modules:     
   build-depends:       base >= 4.7 && < 5
+  default-extensions:
+      NoImplicitPrelude
+    , ApplicativeDo
+    , BangPatterns
+    , BinaryLiterals
+    , DeriveFoldable
+    , DeriveFunctor
+    , DeriveGeneric
+    , DeriveTraversable
+    , DisambiguateRecordFields
+    , DuplicateRecordFields
+    , EmptyCase
+    , FlexibleContexts
+    , FlexibleInstances
+    , FunctionalDependencies
+    , GADTSyntax
+    , InstanceSigs
+    , KindSignatures
+    , LambdaCase
+    , MonadComprehensions
+    , MultiParamTypeClasses
+    , MultiWayIf
+    , NegativeLiterals
+    , OverloadedStrings
+    , ParallelListComp
+    , PartialTypeSignatures
+    , PatternSynonyms
+    , RankNTypes
+    , RecordWildCards
+    , RecursiveDo
+    , ScopedTypeVariables
+    , TupleSections
+    , TypeApplications
+    , TypeFamilies
+    , TypeOperators
 
 executable readme
   default-language:    Haskell2010
@@ -78,60 +97,53 @@ executable readme
   build-depends:       base
                      , protolude
                      , {{name}}
+  default-extensions:
+      NoImplicitPrelude
+    , ApplicativeDo
+    , BangPatterns
+    , BinaryLiterals
+    , DeriveFoldable
+    , DeriveFunctor
+    , DeriveGeneric
+    , DeriveTraversable
+    , DisambiguateRecordFields
+    , DuplicateRecordFields
+    , EmptyCase
+    , FlexibleContexts
+    , FlexibleInstances
+    , FunctionalDependencies
+    , GADTSyntax
+    , InstanceSigs
+    , KindSignatures
+    , LambdaCase
+    , MonadComprehensions
+    , MultiParamTypeClasses
+    , MultiWayIf
+    , NegativeLiterals
+    , OverloadedStrings
+    , ParallelListComp
+    , PartialTypeSignatures
+    , PatternSynonyms
+    , RankNTypes
+    , RecordWildCards
+    , RecursiveDo
+    , ScopedTypeVariables
+    , TupleSections
+    , TypeApplications
+    , TypeFamilies
+    , TypeOperators
 
 source-repository head
   type:     git
   location: https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}
 
-{-# START_FILE src/Lib.hs #-}
--- | zero library
-module Lib () where
-
 {-# START_FILE .gitignore #-}
 /.stack-work/
+TAGS
 
 {-# START_FILE Setup.hs #-}
 import Distribution.Simple
 main = defaultMain
-
-{-# START_FILE .travis.yml #-}
-# Use new container infrastructure to enable caching
-sudo: false
-
-# Choose a lightweight base image; we provide our own build tools.
-language: c
-
-# GHC depends on GMP. You can add other dependencies here as well.
-addons:
-  apt:
-    packages:
-    - libgmp-dev
-
-# The different configurations we want to test. You could also do things like
-# change flags or use --stack-yaml to point to a different file.
-env:
-- ARGS=""
-#- ARGS="--resolver lts-2"
-- ARGS="--resolver lts-3"
-- ARGS="--resolver lts"
-- ARGS="--resolver nightly"
-
-before_install:
-# Download and unpack the stack executable
-- mkdir -p ~/.local/bin
-- export PATH=$HOME/.local/bin:$PATH
-- travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-
-# This line does all of the work: installs GHC if necessary, build the library,
-# executables, and test suites, and runs the test suites. --no-terminal works
-# around some quirks in Travis's terminal implementation.
-script: stack $ARGS --no-terminal --install-ghc test --haddock
-
-# Caching so the next build will be fast too.
-cache:
-  directories:
-  - $HOME/.stack
-
 
 {-# START_FILE LICENSE #-}
 Copyright {{author-name}}{{^author-name}}Author name here{{/author-name}} (c) {{year}}{{^year}}2016{{/year}}

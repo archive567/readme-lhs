@@ -1,264 +1,97 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE MultiWayIf        #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
-
-{-
- Comments starting with CurlDashPipe or CurlDashStar are considered to be part of code
--}
-
--- Comments after `--` are comments (if starting a new line) and comments after `-- |`
--- | are considered to be code
 
 module Main where
 
-import            Data.Maybe          (fromMaybe)
-import            Data.Text           (Text, stripStart, stripPrefix, isPrefixOf, isSuffixOf)
-import qualified  Data.Text           as T
-import qualified  Data.Text.IO        as T
--- import            System.Environment
-import qualified System.IO as IO
+import Protolude hiding ((<>))
+import qualified Data.Text as Text
+import qualified Data.Text.IO as Text
+import Options.Applicative
 import Control.Lens
-import qualified Control.Monad.Trans.State.Strict as S
-import Control.Monad
-import Data.Monoid
-import Control.Monad.Morph
-import System.Console.CmdArgs hiding ((+=))
-import qualified System.FilePath as FilePath
+import System.FilePath
+import qualified Control.Foldl as L
 
 data Config = Config
-    { _nBlanksIsContinue :: Int
-    , _ddIsCode :: Bool
-    , _ddpIsCode :: Bool
-    , _cdhIsCode :: Bool
-    , _cdIsCode :: Bool
-    , _cdpIsCode :: Bool
+    { file :: FilePath
+    , codeBreak :: Int -- number of blanks lines that define a code/comment divide
     }
 
-makeLenses ''Config
-
-defaultConfig :: Config
-defaultConfig = Config 1 False True True False True
+config :: Parser Config
+config = Config
+    <$> (strOption
+          (long "file" <>
+            value "default.lhs" <>
+            help "file to convert"))
+    <*> (option auto
+          (long "break" <>
+            value 1 <>
+            help "number of lines defining a code/comment divide"))
 
 data Tag = Comment | Code deriving (Show, Eq)
 
-data S = S { _sPrevious :: Tag
-           , _sBlankCount :: Int
-           , _sInCurlDash :: Bool
-           , _sInCurlDashPipe :: Bool
-           } deriving (Eq, Show)
-
-makeLenses ''S
-
-initialState :: S
-initialState = S Code 0 False False
-
-lhsLine :: Config -> Text -> S.State S Text
-lhsLine c t = do
-    prev <- use sPrevious
-    when isBlank (sBlankCount += 1)
-    b <- use sBlankCount
-    inCdp <- use sInCurlDashPipe
-    inCd <- use sInCurlDash
-    if
-        | isBlank && 
-          (prev==Comment ||
-           (b > (c ^. nBlanksIsContinue) 
-            && prev==Code)) -> do
-              sPrevious .= Comment
-              return t
-        | stripIf "-- |" ddpIsCode -> commentStrip "-- |"
-        | stripIf "-- *" ddpIsCode -> commentStrip "-- *"
-        | ("--" `isPrefixOf` t) && 
-          not ("-- |" `isPrefixOf` t) && 
-          not ("-- *" `isPrefixOf` t) &&
-          not (c ^. ddIsCode) -> commentStrip "--"
-        | isPrefixOf "{-#" t && isSuffixOf "#-}" t && not (c ^. cdhIsCode) -> 
-              commentStrip ""
-        | stripIf "{- |" cdpIsCode -> 
-              sInCurlDashPipe .= True >> commentStrip "{- |"
-        | stripIf "{- *" cdpIsCode -> 
-              sInCurlDashPipe .= True >> commentStrip "{- *"
-        | ("{-" `isPrefixOf` t) && 
-          not ("{- |" `isPrefixOf` t) && 
-          not ("{- *" `isPrefixOf` t) &&
-          not ("{-#"  `isPrefixOf` t) &&
-          not (c ^. cdIsCode) -> sInCurlDash .= True >> commentStrip "{-"
-        | stripIf "| -}" cdpIsCode -> 
-              sInCurlDashPipe .= False >> commentStrip "| -}"
-        | stripIf "* -}" cdpIsCode -> 
-              sInCurlDashPipe .= False >> commentStrip "* -}"
-        | stripIf "-}" cdpIsCode -> do
-              sInCurlDash .= False
-              sInCurlDashPipe .= False
-              commentStrip "-}"
-        | inCdp || inCd && not (c ^. cdIsCode) -> commentStrip ""
-        | otherwise -> codeDecorate "> "
+lhs :: Int -> [Text] -> [Text]
+lhs break ts = L.fold (L.Fold step ((Code, 0), []) done) ts
   where
-    isBlank = stripStart t == T.empty
-    stripIf p c' = isPrefixOf p t && not (c ^. c')
-    commentStrip p = do
-              sPrevious .= Comment
-              return $ fromMaybe t (stripPrefix p t)
-    codeDecorate p = do
-              sPrevious .= Code
-              return $ p <> t
+    done ((_,_), output) = output
+    step :: ((Tag, Int), [Text]) -> Text -> ((Tag, Int), [Text])
+    step ((tag, n), output) a =
+        let ((tag', n'), a') = lhsLine (tag, n) a
+        in ((tag', n'), output <> a')
+    lhsLine (tag, n) text = do
+        if
+            | Text.stripStart text == "" && n < break -> ((tag, n+1), [text])
+            | Text.stripStart text == "" -> ((toggle tag, 0), [text])
+            | "---" `Text.isPrefixOf` text && tag == Comment -> ((Comment, 0), [text])
+            | "--" `Text.isPrefixOf` text -> ((Code, 0), [bird text])
+            | "{-#" `Text.isPrefixOf` text || "#-}" `Text.isSuffixOf` text ->
+                  ((Code,0), [bird text])
+            | "{-" == text -> ((Comment,0), [])
+            | "-}" == text -> ((Code,0), [])
+            | "{-" `Text.isPrefixOf` text -> ((Comment,0), [prefixStrip "{-" text])
+            | "-}" `Text.isSuffixOf` text -> ((Code,0), [suffixStrip "-}" text])
+            | tag == Code -> ((Code,0), [bird text])
+            | otherwise -> ((tag,0), [text])
+          where
+            bird t = "> " <> t
+            toggle Code = Comment
+            toggle Comment = Code
+            prefixStrip p t = fromMaybe t (Text.stripPrefix p t)
+            suffixStrip p t = fromMaybe t (Text.stripSuffix p t)
 
-lhsLine' :: Config -> Text -> S.StateT S IO Text
-lhsLine' c t = do
-    prev <- use sPrevious
-    sBlankCount %= if isBlank then (+1) else const 0 
-    b <- use sBlankCount
-    inCdp <- use sInCurlDashPipe
-    inCd <- use sInCurlDash
-    if
-        | isBlank && 
-          (prev==Comment ||
-           (b > (c ^. nBlanksIsContinue) 
-            && prev==Code)) ->
-              commentStrip "" "isBlank"
-        | stripIf "-- |" ddpIsCode ->
-              commentStrip "-- |" "-- |"
-        | stripIf "-- *" ddpIsCode -> commentStrip "-- *" "-- *"
-        | ("--" `isPrefixOf` t) && 
-          not ("-- |" `isPrefixOf` t) &&
-          not ("-- *" `isPrefixOf` t) &&
-          not (c ^. ddIsCode) -> commentStrip "--" "--"
-        | isPrefixOf "{-#" t && isSuffixOf "#-}" t && not (c ^. cdhIsCode) ->
-              commentStrip "" "pragma"
-        | stripIf "{- |" cdpIsCode -> 
-              sInCurlDashPipe .= True >> commentStrip "{- |" "{- |"
-        | stripIf "{- *" cdpIsCode -> 
-              sInCurlDashPipe .= True >> commentStrip "{- *" "{- *"
-        | ("{-" `isPrefixOf` t) && 
-          not ("{- |" `isPrefixOf` t) && 
-          not ("{- *" `isPrefixOf` t) &&
-          not ("{-#"  `isPrefixOf` t) &&
-          not (c ^. cdIsCode) -> sInCurlDash .= True >> commentStrip "{-" "{-"
-        | stripIf "| -}" cdpIsCode -> 
-              sInCurlDashPipe .= False >> commentStrip "| -}" "| -}"
-        | stripIf "* -}" cdpIsCode -> 
-              sInCurlDashPipe .= False >> commentStrip "* -}" "* -}"
-        | stripIf "-}" cdIsCode -> do
-              sInCurlDash .= False
-              sInCurlDashPipe .= False
-              commentStrip "-}" "-}"
-        | inCdp || inCd && not (c ^. cdIsCode) ->
-              commentStrip "" "inCD"
-        | otherwise ->
-              codeDecorate "> " "code"
+hs :: [Text] -> [Text]
+hs ts = L.fold (L.Fold step (Code, []) snd) ts
   where
-    isBlank = stripStart t == T.empty
-    stripIf p c' = isPrefixOf p t && not (c ^. c')
-    commentStrip p pr = do
-              sPrevious .= Comment
-              lift $ print pr
-              return $ fromMaybe t (stripPrefix p t)
-    codeDecorate p pr = do
-              sPrevious .= Code
-              lift $ print pr
-              return $ p <> t
+    done (Code,output) = output
+    done (Comment,output) = output <> ["-}"]
+    step :: (Tag, [Text]) -> Text -> (Tag, [Text])
+    step (section, output) a =
+        let (tag, text) = lhsLine section a in (tag, output <> text)
+    lhsLine tag text = do
+        if
+            | "> " `Text.isPrefixOf` text && tag == Comment -> (Code, ["-}", unbird text])
+            | "> " `Text.isPrefixOf` text -> (Code, [unbird text])
+            | tag == Code -> (Comment, ["{-", text])
+            | otherwise -> (tag, [text])
+          where
+            unbird t = fromMaybe t (Text.stripPrefix "> " t)
 
- 
-lhs :: [Text] -> IO [Text]
-lhs ts = (`S.evalStateT` initialState)
-         (sequence $ lhsLine' defaultConfig <$> ts)
-
-data HS = HS { _hsCommentBlock :: [Text]
-             } deriving (Eq, Show)
-
-makeLenses ''HS
-
-initialHState :: HS
-initialHState = HS []
-
-hsLine' :: Text -> S.StateT HS IO [Text]
-hsLine' t =
-    if  | ("> " `isPrefixOf` t) -> do
-              priorComments <- use hsCommentBlock
-              hsCommentBlock .= []
-              return $ pad priorComments ++ [fromMaybe t (stripPrefix "> " t)]
-        | otherwise -> do
-              hsCommentBlock %= (++ [t])
-              return mempty
-
-pad :: [Text] -> [Text]
-pad cs = case length cs of
-              0 -> mempty
-              1 -> ["-- " <> head cs]
-              _ -> ["{-"] ++ cs ++ ["-}"]  
-
-hs :: [Text] -> IO [Text]
-hs ts = do
-    (ans,st) <- (`S.runStateT` initialHState)
-         (sequence $ hsLine' <$> ts)
-    return $ concat ans ++ pad (st ^. hsCommentBlock)
-
-lhs2hs :: IO ()
-lhs2hs = do
-  text <- T.readFile "example.lhs"
-  let p = T.lines text
-  IO.withFile "example.hs" IO.WriteMode $ \h -> do
-      p' <- hs p
-      mapM_ (T.hPutStrLn h) p'
-
-{-
-main' :: IO ()
-main' = do
-  text <- T.readFile . head =<< getArgs
-  let p = T.lines text
-  mapM_ T.putStrLn (lhs (Code,0) p)
--}
-
-data Options = Options
-  { fi :: FilePath
-  } deriving (Show,Data,Typeable)
-
-options :: Options
-options = Options
-  { fi = def &= help "file to convert"
-  }
-  &= program "lhs"
-  &= summary "hs2lhsIso"
-  &= help "Testing help ..."
+consume :: Config -> IO ()
+consume (Config "" _) = pure ()
+consume (Config file break) = do
+  text <- readFile file
+  let isHs = ".hs" == takeExtension file
+  let fo = dropExtension file ++ (if isHs then ".lhs" else ".hs")
+  withFile fo WriteMode $ \h -> do
+      let p' = (if isHs then lhs break else hs) (Text.lines text)
+      mapM_ (Text.hPutStrLn h) p'
 
 main :: IO ()
-main = do
-  o <- cmdArgs options
-  text <- T.readFile (fi o)
-  let p = T.lines text
-  let isHs = ".hs" == FilePath.takeExtension (fi o)
-  let fo = FilePath.dropExtension (fi o) ++ (if isHs then ".lhs" else ".hs")
-  IO.withFile fo IO.WriteMode $ \h -> do
-      p' <- (if isHs then lhs else hs) p
-      mapM_ (T.hPutStrLn h) p'
-
-
-
-{-
-
-λ> (`S.runState` initialState) (sequence $ lhsLine defaultConfig <$> ["",""])
-(["> ",""],S {_sPrevious = Comment, _sBlankCount = 2, _sInCurlDash = False, _sInCurlDashPipe = False})
-λ> 
-
-λ> (`S.runState` initialState) (sequence $ lhsLine defaultConfig <$> ["{-# pragma #-}","code","","","-- a normal comment","","-- | a special comment","","","-- * another one"])
-(["{-# pragma #-}","> code","> ","","> -- a normal comment","","> -- | a special comment","","","> -- * another one"],S {_sPrevious = Code, _sBlankCount = 5, _sInCurlDash = False, _sInCurlDashPipe = False})
-
-λ> (`S.runStateT` initialState) (sequence $ lhsLine' defaultConfig <$> ["{-# pragma #-}","code","","","-- a normal comment","","-- | a special comment","","","-- * another one"])
-"code line!"
-"code line!"
-"code line!"
-"isBlank"
-"--"
-"isBlank"
-"code line!"
-"isBlank"
-"isBlank"
-"code line!"
-(["> {-# pragma #-}","> code","> ",""," a normal comment","","> -- | a special comment","","","> -- * another one"],S {_sPrevious = Code, _sBlankCount = 5, _sInCurlDash = False, _sInCurlDashPipe = False})
-
-
--}
+main = execParser opts >>= consume
+  where
+    opts = info (helper <*> config)
+        ( fullDesc
+        <> progDesc "convert between lhs and hs"
+        <> header "lhs")
 
