@@ -3,10 +3,8 @@
 > import Protolude
 >
 > import Test.Tasty (TestTree, testGroup, defaultMain)
-> -- import qualified Test.QuickCheck as QC
 > import Test.HUnit (Assertion, (@?=))
 > import Test.Tasty.HUnit (testCase)
-> -- import Test.Tasty.QuickCheck (testProperty)
 > import qualified Data.Text as Text
 >
 > import Readme.Lhs
@@ -35,10 +33,10 @@ Once having been through these normalisations, however, isomorphism should appea
 >
 > tests :: [Text] -> [Text] -> TestTree
 > tests tsHs tsLhs = testGroup "Readme.Lhs"
->     [ testCase "lhs . hs semi-iso" (testLhsHsIso (Config "" 1 Code) tsLhs)
->     , testCase "hs . lhs semi-iso" (testHsLhsIso (Config "" 1 Code) tsHs)
+>     [ testCase "lhs . hs semi-iso" (testLhsHsIso (Config 1 Code) tsLhs)
+>     , testCase "hs . lhs semi-iso" (testHsLhsIso (Config 1 Code) tsHs)
 >     ]
->
+> 
 > main :: IO ()
 > main = do
 >     tsHs <- Text.lines <$> readFile "test/example1.hs"

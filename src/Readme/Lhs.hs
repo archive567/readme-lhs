@@ -4,16 +4,15 @@ import Protolude
 import qualified Control.Foldl as L
 import qualified Data.Text as Text
 
-data Section = Comment | Code deriving (Show, Eq, Read)
+data Section = Comment | Code deriving (Show, Eq)
 
 data Config = Config
-    { file :: FilePath
-    , trailingBlanks :: Int
+    { trailingBlanks :: Int
     , section :: Section
-    } deriving (Show, Eq, Read)
+    } deriving (Show, Eq)
 
 lhs :: Config -> [Text] -> [Text]
-lhs (Config _ trailing section) ts =
+lhs (Config trailing section) ts =
     L.fold (L.Fold step ((0,section), []) done) ts
   where
     done ((_,_), o) = o
@@ -28,12 +27,16 @@ lhs (Config _ trailing section) ts =
         | "{-#" `Text.isPrefixOf` text || "#-}" `Text.isSuffixOf` text ->
                   ((0,Code), [bird text])
         | "{-" `Text.isPrefixOf` text && "-}" `Text.isSuffixOf` text ->
-              ((0,Code), [suffixStrip "-}" (prefixStrip "{-" text)])
+              ((0,Comment), [suffixStrip "-}" (prefixStrip "{-" text)])
+        | "{-" == text ->
+              ((0,Comment), [])
         | "{-" `Text.isPrefixOf` text ->
               ((0,Comment), [prefixStrip "{-" text])
+        | "{-" == text ->
+              ((0,Code), [])
         | "-}" `Text.isSuffixOf` text ->
               ((0,Code), [suffixStrip "-}" text])
-        | section == Code -> ((0,Code), [bird text])
+        | s == Code -> ((0,Code), [bird text])
         | otherwise -> ((0,Comment), [text])
       where
         bird t = "> " <> t
@@ -41,7 +44,7 @@ lhs (Config _ trailing section) ts =
         suffixStrip p t = fromMaybe t (Text.stripSuffix p t)
 
 hs :: Config -> [Text] -> [Text]
-hs (Config _ trailing section) ts = L.fold (L.Fold step (Code, []) done) ts
+hs (Config trailing section) ts = L.fold (L.Fold step (Code, []) done) ts
   where
     done (Comment,o) = o <> ["-}"]
     done (_,o) = o

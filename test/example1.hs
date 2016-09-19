@@ -1,3 +1,5 @@
+
+{-# LANGUAGE NoImplicitPrelude #-}
 import Protolude
 
 main :: IO ()
