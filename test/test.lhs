@@ -1,6 +1,7 @@
+> {-# OPTIONS_GHC -Wall #-}
 > module Main where
 >
-> import Protolude
+> import Protolude hiding (print)
 >
 > import Test.Tasty (TestTree, testGroup, defaultMain)
 > import Test.HUnit (Assertion, (@?=))
@@ -10,31 +11,30 @@
 > import Readme.Lhs
 >
 
-hs . lhs is almost an isomorphism.
+parse . print is almost an isomorphism.
 
-We impose a limit to the number of trailing blank lines that receive a bird.  lhs strips curl dash and dash curl from the text, and hs adds them back in whenever it discovers a boundary between (birded) code and comment.  In the stripping however, it gets forgotten where exactly the comment pragmas were placed (new line or suffix of old line).
+Forgetting whether comment marks were on a new line or embedded in with the comment text lines, and ensuring enough spaces in lhs comment sections to avoid unlit causes some initial style to be lost.
 
-Once having been through these normalisations, however, isomorphism should appear.  lhs and hs should then satisfy the following laws:
+Once having been through these normalisations, however, isomorphism should appear.  print and parse should then satisfy the following laws:
 
-    -- round about isomorphisms
-    (lhs . hs) . (lhs . hs) = (lhs . hs)
-    (hs . lhs) . (hs . lhs) = (hs . lhs)
-    lhs . hs . lhs = lhs
-    hs . lhs . hs = hs
+    (parse Lhs . print Lhs) = id -- printid
+    -- round about isomorphism
+    (print Lhs . parse Lhs) . (print Lhs . parse Lhs) = (print Lhs . parse Lhs) -- parseid
 
-> testLhsHsIso :: Config -> [Text] -> Assertion
-> testLhsHsIso cfg ts =
->     ((lhs cfg . hs cfg) . (lhs cfg . hs cfg)) ts @?= (lhs cfg . hs cfg) ts
+> testPrintid :: Format -> [Block] -> Assertion
+> testPrintid s f =
+>     (parse s . print s) f @?= f
 >
-> testHsLhsIso :: Config -> [Text] -> Assertion
-> testHsLhsIso cfg ts =
->     ((hs cfg . lhs cfg) . (hs cfg . lhs cfg)) ts @?= (hs cfg . lhs cfg) ts
->
+> testParseid :: Format -> [Text] -> Assertion
+> testParseid s ts =
+>     ((print s . parse s) . (print s . parse s)) ts @?= (print s . parse s) ts
 >
 > tests :: [Text] -> [Text] -> TestTree
 > tests tsHs tsLhs = testGroup "Readme.Lhs"
->     [ testCase "lhs . hs semi-iso" (testLhsHsIso (Config 1 Code) tsLhs)
->     , testCase "hs . lhs semi-iso" (testHsLhsIso (Config 1 Code) tsHs)
+>     [ testCase "print parse iso - lhs" (testPrintid Lhs (parse Lhs tsLhs))
+>     , testCase "parse print pseudo-iso - lhs" (testParseid Lhs tsLhs)
+>     , testCase "print parse iso - hs" (testPrintid Hs (parse Hs tsHs))
+>     , testCase "parse print pseudo-iso - hs" (testParseid Hs tsHs)
 >     ]
 > 
 > main :: IO ()
@@ -43,7 +43,6 @@ Once having been through these normalisations, however, isomorphism should appea
 >     tsLhs <- Text.lines <$> readFile "test/example1.lhs"
 >     defaultMain (tests tsHs tsLhs)
 >
-
 
 
 

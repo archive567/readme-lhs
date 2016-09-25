@@ -35,8 +35,9 @@ library
   build-depends:
     base,
     protolude,
+    foldl,
     text,
-    foldl
+    attoparsec
   default-extensions:
     NoImplicitPrelude,
     UnicodeSyntax,
@@ -90,11 +91,12 @@ executable lhs
     -with-rtsopts=-N
   build-depends:
     base,
+    protolude,
     readme-lhs,
     optparse-applicative,
     filepath,
-    foldl,
-    protolude
+    text,
+    containers
   default-language:
     Haskell2010
   default-extensions:
@@ -202,11 +204,11 @@ test-suite test
     test.lhs
   build-depends:
     base >= 4 && < 5,
+    protolude,
     tasty,
     HUnit,
     tasty-hunit,
     readme-lhs,
-    protolude,
     text
   default-extensions:
     NoImplicitPrelude,

@@ -1,48 +1,39 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE MultiWayIf        #-}
-{-# LANGUAGE TemplateHaskell #-}
-
+{-# OPTIONS_GHC -Wall #-}
 module Main where
 
-import Protolude hiding ((<>))
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text
 import Options.Applicative
-import Control.Lens
-import System.FilePath
-import qualified Control.Foldl as L
+import Protolude hiding ((<>))
 import Readme.Lhs
+import System.FilePath
 
 data Options = Options
     { fileIn :: FilePath
     , fileOut :: FilePath
-    , trailingBlanks :: Int
     } deriving (Show, Eq)
 
-options :: Parser Options
+options :: Options.Applicative.Parser Options
 options = Options
     <$> (strOption
         (long "in" <> short 'i' <> value "" <> help "file in"))
     <*> (strOption
         (long "out" <> short 'o' <> value "" <> help "file out"))
-    <*> (option auto (long "trailing" <> value 1 <> help "number of trailing blanks considered to be code"))
 
 consume :: Options -> IO ()
-consume (Options "" _ _) = pure ()
-consume (Options fi fo tb) = do
-  text <- readFile fi
-  let isHs = ".hs" == takeExtension fi
-  let fo' = dropExtension fi ++ (if isHs then ".lhs" else ".hs")
-  withFile (if fo == "" then fo' else fo) WriteMode $ \h -> do
-      let p' = (if isHs then lhs else hs) (Config tb Code) (Text.lines text)
-      mapM_ (Text.hPutStrLn h) p'
+consume (Options "" _) = pure ()
+consume (Options fi fo) = do
+    text <- readFile fi
+    let fromHs = ".hs" == takeExtension fi
+    let fo' = dropExtension fi ++ (if fromHs then ".lhs" else ".hs")
+    withFile (if fo == "" then fo' else fo) WriteMode $ \h -> do
+        let f = parse (if fromHs then Hs else Lhs) (Text.lines text)
+        mapM_ (Text.hPutStrLn h) (Readme.Lhs.print (if fromHs then Lhs else Hs) f)
 
 main :: IO ()
 main = execParser opts >>= consume
   where
     opts = info (helper <*> options)
-        ( fullDesc
-        <> progDesc "convert between lhs and hs"
-        <> header "lhs")
-
+      ( fullDesc
+      <> progDesc "almost isomorph of .lhs and .hs formats"
+      <> header "lhs")
