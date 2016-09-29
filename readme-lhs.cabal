@@ -4,6 +4,8 @@ version:
   0.1.0.0
 synopsis:
   See readme.lhs
+description:
+  See readme.lhs
 homepage:
   https://github.com/tonyday567/readme-lhs
 license:
@@ -27,7 +29,6 @@ library
   default-language:
     Haskell2010
   ghc-options:
-    -O2
   hs-source-dirs:
     src
   exposed-modules:
@@ -71,11 +72,6 @@ library
     TupleSections,
     TypeFamilies,
     TypeOperators
-  if impl(ghc>=8.0.1)
-    default-extensions:
-      ApplicativeDo,
-      DuplicateRecordFields,
-      TypeApplications
 
 executable lhs
   default-language:
@@ -85,12 +81,11 @@ executable lhs
   main-is:
     Main.hs
   ghc-options:
-    -O2
     -threaded
     -rtsopts
     -with-rtsopts=-N
   build-depends:
-    base,
+    base >= 4 && < 5,
     protolude,
     readme-lhs,
     optparse-applicative,
@@ -133,23 +128,16 @@ executable lhs
     TypeFamilies,
     TypeOperators
 
-  if impl(ghc>=8.0.1)
-    default-extensions:
-      ApplicativeDo,
-      DuplicateRecordFields,
-      TypeApplications
-
 executable readme
   default-language:
     Haskell2010
   ghc-options:
-    -O2
   hs-source-dirs:
     ./
   main-is:
     readme.lhs
   build-depends:
-    base,
+    base >= 4 && < 5,
     protolude,
     text,
     foldl
@@ -186,12 +174,6 @@ executable readme
     TupleSections,
     TypeFamilies,
     TypeOperators
-
-  if impl(ghc>=8.0.1)
-    default-extensions:
-      ApplicativeDo,
-      DuplicateRecordFields,
-      TypeApplications
 
 test-suite test
   default-language:
@@ -243,12 +225,6 @@ test-suite test
     TupleSections,
     TypeFamilies,
     TypeOperators
-
-  if impl(ghc>=8.0.1)
-    default-extensions:
-      ApplicativeDo,
-      DuplicateRecordFields,
-      TypeApplications
 
 source-repository head
   type:
