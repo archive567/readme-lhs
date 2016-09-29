@@ -2,8 +2,8 @@
 <script type="text/javascript" async
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-readme-lhs [![repo](https://a248.e.akamai.net/assets.github.com/images/icons/emoji/octocat.png)](https://github.com/tonyday567/readme-lhs) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.png)](https://travis-ci.org/tonyday567/readme-lhs)
-==========================================================================================================================================================================================================================================================
+readme-lhs [![repo](https://a248.e.akamai.net/assets.github.com/images/icons/emoji/octocat.png)](https://github.com/tonyday567/readme-lhs) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.png)](https://travis-ci.org/tonyday567/readme-lhs) [html](https://tonyday567.github.io/readme-lhs.html)
+===============================================================================================================================================================================================================================================================================================================
 
 I've long suffered from procrastination in new projects. The coders
 equivalent for sharpening pencils is the creation of bespoke,
@@ -32,7 +32,7 @@ Stripping away optional extras, I went with a minimalist design:
 -   most commonly-used, and mostly-benign language flags,
     NoImplicitPrelude & UnicodeSyntax
 
-todo: make use of UnicodeSyntax
+    todo: make use of UnicodeSyntax
 
 A partial list of what I let go of in the initial project build:
 
@@ -70,10 +70,10 @@ I gather libraries I guess I'm needing, adding to .cabal and imports
 added to readme.lhs. Firing up a repl there, I start hacking some code
 together, saving the good bits to readme.lhs, adding notes and links,
 and getting some initial learnings coded up in main, so I can eyeball
-results. I use the following command to build, run, and render
-readme.lhs as html.
+results. I use the following command to build, run, and render an
+index.html to publish on github.
 
-    stack install && readme && pandoc -f markdown+lhs -i readme.lhs -t html -o readme.html --filter pandoc-include --mathjax
+    stack install && readme && pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax
 
 todo:
 
@@ -134,6 +134,6 @@ main = do
 ```
 
 Output from the code above appears in this readme.lhs when rendered with
-pandoc-include.
+pandoc-include (except if you're reading this in github, sorry):
 
 $\prod_{x=1}^{20} x = 2432902008176640000$
