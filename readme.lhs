@@ -2,7 +2,7 @@
 other/header.md
 ```
 
-readme-lhs [![repo](https://a248.e.akamai.net/assets.github.com/images/icons/emoji/octocat.png)](https://github.com/tonyday567/readme-lhs) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.png)](https://travis-ci.org/tonyday567/readme-lhs)
+readme-lhs [![repo](https://a248.e.akamai.net/assets.github.com/images/icons/emoji/octocat.png)](https://github.com/tonyday567/readme-lhs) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.png)](https://travis-ci.org/tonyday567/readme-lhs) [html](https://tonyday567.github.io/readme-lhs.html)
 ===
 
 I've long suffered from procrastination in new projects. The coders equivalent for sharpening pencils is the creation of bespoke, boiler-plate scaffolding as one prevaricates about the guts of the project. I see evidence littered through my old repos - self-obsfucating technical debt encrusted on the interface between the project and RealWorld.
@@ -21,7 +21,7 @@ Stripping away optional extras, I went with a minimalist design:
 - readme.lhs as a general purpose executable, tester, example holder and all-round centralising communication document.
 - most commonly-used, and mostly-benign language flags, NoImplicitPrelude & UnicodeSyntax
 
-todo: make use of UnicodeSyntax
+    todo: make use of UnicodeSyntax
 
 A partial list of what I let go of in the initial project build:
 
@@ -47,10 +47,10 @@ Copied executables to /Users/tonyday/.local/bin:
 "ok"
 ~~~
 
-I gather libraries I guess I'm needing, adding to .cabal and imports added to readme.lhs.  Firing up a repl there, I start hacking some code together, saving the good bits to readme.lhs, adding notes and links, and getting some initial learnings coded up in main, so I can eyeball results. I use the following command to build, run, and render readme.lhs as html.
+I gather libraries I guess I'm needing, adding to .cabal and imports added to readme.lhs.  Firing up a repl there, I start hacking some code together, saving the good bits to readme.lhs, adding notes and links, and getting some initial learnings coded up in main, so I can eyeball results. I use the following command to build, run, and render an index.html to publish on github.
 
 ~~~
-stack install && readme && pandoc -f markdown+lhs -i readme.lhs -t html -o readme.html --filter pandoc-include --mathjax
+stack install && readme && pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax
 ~~~
 
 todo:
