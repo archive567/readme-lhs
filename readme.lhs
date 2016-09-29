@@ -106,7 +106,7 @@ I tend to stick [protolude](http://www.stephendiehl.com/posts/protolude.html) in
 >       "$\\prod_{x=1}^{20} x = " <> show (fac 20) <> "$\n"
 >
 
-Output from the code above appears in this readme.lhs when rendered with pandoc-include.
+Output from the code above appears in this readme.lhs when rendered with pandoc-include (except if you're reading this in github, sorry):
 
 ```include
 other/example.md
