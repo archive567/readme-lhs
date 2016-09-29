@@ -34,7 +34,7 @@ library
   exposed-modules:
     Readme.Lhs
   build-depends:
-    base,
+    base >= 4.7 && < 5,
     protolude,
     foldl,
     text,
@@ -85,7 +85,7 @@ executable lhs
     -rtsopts
     -with-rtsopts=-N
   build-depends:
-    base >= 4 && < 5,
+    base >= 4.7 && < 5,
     protolude,
     readme-lhs,
     optparse-applicative,
@@ -137,7 +137,7 @@ executable readme
   main-is:
     readme.lhs
   build-depends:
-    base >= 4 && < 5,
+    base >= 4.7 && < 5,
     protolude,
     text,
     foldl
@@ -185,7 +185,7 @@ test-suite test
   main-is:
     test.lhs
   build-depends:
-    base >= 4 && < 5,
+    base >= 4.7 && < 5,
     protolude,
     tasty,
     HUnit,
