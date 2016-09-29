@@ -5,7 +5,7 @@
 [readme-lhs](https://tonyday567.github.io/readme-lhs/index.html) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.png)](https://travis-ci.org/tonyday567/readme-lhs)
 ================================================================================================================================================================================
 
-A literate haskell workflow.
+\*\* starting a literate haskell narrative.\*\*
 
 I've long suffered from procrastination in new projects. The coders
 equivalent for sharpening pencils is the creation of bespoke,
@@ -16,8 +16,8 @@ RealWorld.
 
 So, starting at the pointy end of a new project, I aligned my workflow
 with stack, and started looking at a reproducible, exact startup
-routine. I followed the path to stack templates and wrote my own, which
-was kindy accepted by the crew.
+routine. I followed the path to stack templates and wrote my own
+(`stack new project-name readme-lhs`), which was kindy accepted.
 
 design
 ------
@@ -26,32 +26,40 @@ Stripping away optional extras, I went with a minimalist design:
 
 -   markdown for all docs. Anything outside what markdown can do is me
     being too fancy.
--   pandoc for doc conversion
+-   pandoc for document conversion. `-f markdown+lhs` is a georgeous
+    rendering of a .lhs file. I turn [github
+    pages](https://help.github.com/articles/user-organization-and-project-pages/)
+    on using the User Pages site method for each project I'd like to
+    blog, and render readme.lhs to index.html using pandoc.
 -   css for styling
--   lhs as a valid haskell artform
+-   using lhs as a valid haskell artform
 -   readme.lhs as a general purpose executable, tester, example holder
     and all-round centralising communication document.
--   most commonly-used, and mostly-benign language flags,
-    NoImplicitPrelude & UnicodeSyntax
+-   a long list of the most commonly-used, and mostly-benign language
+    flags, NoImplicitPrelude & UnicodeSyntax. I call this -XHaskell2016
+    in private.
+-   the stack-recommended .travis.yml
+-   Embedding [Protolude](https://www.stackage.org/package/protolude) as
+    the replacement prelude.
 
-    todo: make use of UnicodeSyntax
+Here's what I threw out:
 
-A partial list of what I let go of in the initial project build:
-
--   haddock. haddock and markdown don't mix well.
+-   haddock. The design space of using markdown as a complete
+    replacement is fresh territory.
 -   test directory. I looked through my test and example directories and
     noted the mess in many. I love to test - creating a realistic
     arbitrary instance is the best way to get to know your data
     structures - but tests and multiple examples didn't belong in the
     start-up phase.
--   hakyll. Markdown created for a separate blogging process is better
-    inside the actual project as readme's.
+-   hakyll. For me, markdown created for a separate blogging process is
+    better inside the actual project as readme's - my hakyll site rots
+    pretty quickly.
 -   app directory. The boundary between what the app is and what the
     library is is very fluid for me, and a source of technical debt as
     concepts bounce between directories.
 
-I then keep this repo around for the odd occasions when I'm looking for
-test and app boiler-plate.
+I then keep this repo around for phase 2, where a project takes a
+successful shape and and needs test and app boiler-plate.
 
 Workflow
 --------
@@ -73,9 +81,9 @@ added to readme.lhs. Firing up a repl there, I start hacking some code
 together, saving the good bits to readme.lhs, adding notes and links,
 and getting some initial learnings coded up in main, so I can eyeball
 results. I use the following command to build, run, and render an
-index.html to publish on github.
+index.html so pushing is also auto-publishing on github.
 
-    stack install && readme && pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax
+    stack install && readme && pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax && pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax
 
 todo:
 
@@ -108,6 +116,9 @@ In particular, hlint didn't always play nice with .lhs, and for a while
 I needed to flip from .lhs to .hs, run hlint, and then flip back to
 .lhs.
 
+lhs makes no attempt to account for haddock and will thus not be
+suitable for most people.
+
 To install and use lhs:
 
     git clone https://github.com/tonyday567/readme-lhs
@@ -136,6 +147,7 @@ main = do
 ```
 
 Output from the code above appears in this readme.lhs when rendered with
-pandoc-include (except if you're reading this in github, sorry):
+pandoc-include (except if you're reading this as the repo readme.md,
+sorry):
 
 $\prod_{x=1}^{20} x = 2432902008176640000$

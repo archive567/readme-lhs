@@ -49,10 +49,10 @@ Copied executables to /Users/tonyday/.local/bin:
 "ok"
 ~~~
 
-I gather libraries I guess I'm needing, adding to .cabal and imports added to readme.lhs.  Firing up a repl there, I start hacking some code together, saving the good bits to readme.lhs, adding notes and links, and getting some initial learnings coded up in main, so I can eyeball results. I use the following command to build, run, and render an index.html to publish on github.
+I gather libraries I guess I'm needing, adding to .cabal and imports added to readme.lhs.  Firing up a repl there, I start hacking some code together, saving the good bits to readme.lhs, adding notes and links, and getting some initial learnings coded up in main, so I can eyeball results. I use the following command to build, run, and render an index.html so pushing is also auto-publishing on github.
 
 ~~~
-stack install && readme && pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax
+stack install && readme && pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax && pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax
 ~~~
 
 todo:
