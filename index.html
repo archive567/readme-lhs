@@ -3,7 +3,7 @@
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 <h1 id="readme-lhs-build-status"><a href="https://tonyday567.github.io/readme-lhs/index.html">readme-lhs</a> <a href="https://travis-ci.org/tonyday567/readme-lhs"><img src="https://travis-ci.org/tonyday567/readme-lhs.png" alt="Build Status" /></a></h1>
-<p>** starting a literate haskell narrative.**</p>
+<p><em>starting a literate haskell narrative.</em></p>
 <p>I've long suffered from procrastination in new projects. The coders equivalent for sharpening pencils is the creation of bespoke, boiler-plate scaffolding as one prevaricates about the guts of the project. I see evidence littered through my old repos - self-obsfucating technical debt encrusted on the interface between the project and RealWorld.</p>
 <p>So, starting at the pointy end of a new project, I aligned my workflow with stack, and started looking at a reproducible, exact startup routine. I followed the path to stack templates and wrote my own (<code>stack new project-name readme-lhs</code>), which was kindy accepted.</p>
 <h2 id="design">design</h2>
@@ -11,7 +11,7 @@
 <ul class="incremental">
 <li>markdown for all docs. Anything outside what markdown can do is me being too fancy.</li>
 <li>pandoc for document conversion. <code>-f markdown+lhs</code> is a georgeous rendering of a .lhs file. I turn <a href="https://help.github.com/articles/user-organization-and-project-pages/">github pages</a> on using the User Pages site method for each project I'd like to blog, and render readme.lhs to index.html using pandoc.</li>
-<li>css for styling</li>
+<li>css for styling, but also dealing with github markdown style which is where many users will read your lhs.</li>
 <li>using lhs as a valid haskell artform</li>
 <li>readme.lhs as a general purpose executable, tester, example holder and all-round centralising communication document.</li>
 <li>a long list of the most commonly-used, and mostly-benign language flags, NoImplicitPrelude &amp; UnicodeSyntax. I call this -XHaskell2016 in private.</li>

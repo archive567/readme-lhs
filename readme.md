@@ -5,7 +5,7 @@
 [readme-lhs](https://tonyday567.github.io/readme-lhs/index.html) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.png)](https://travis-ci.org/tonyday567/readme-lhs)
 ================================================================================================================================================================================
 
-\*\* starting a literate haskell narrative.\*\*
+*starting a literate haskell narrative.*
 
 I've long suffered from procrastination in new projects. The coders
 equivalent for sharpening pencils is the creation of bespoke,
@@ -31,7 +31,8 @@ Stripping away optional extras, I went with a minimalist design:
     pages](https://help.github.com/articles/user-organization-and-project-pages/)
     on using the User Pages site method for each project I'd like to
     blog, and render readme.lhs to index.html using pandoc.
--   css for styling
+-   css for styling, but also dealing with github markdown style which
+    is where many users will read your lhs.
 -   using lhs as a valid haskell artform
 -   readme.lhs as a general purpose executable, tester, example holder
     and all-round centralising communication document.
