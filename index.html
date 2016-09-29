@@ -2,7 +2,8 @@
 <script type="text/javascript" async
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-<h1 id="readme-lhs-repo-build-status-html">readme-lhs <a href="https://github.com/tonyday567/readme-lhs"><img src="https://a248.e.akamai.net/assets.github.com/images/icons/emoji/octocat.png" alt="repo" /></a> <a href="https://travis-ci.org/tonyday567/readme-lhs"><img src="https://travis-ci.org/tonyday567/readme-lhs.png" alt="Build Status" /></a> <a href="https://tonyday567.github.io/readme-lhs.html">html</a></h1>
+<h1 id="readme-lhs-build-status"><a href="https://tonyday567.github.io/readme-lhs/index.html">readme-lhs</a> <a href="https://travis-ci.org/tonyday567/readme-lhs"><img src="https://travis-ci.org/tonyday567/readme-lhs.png" alt="Build Status" /></a></h1>
+<p>A literate haskell workflow.</p>
 <p>I've long suffered from procrastination in new projects. The coders equivalent for sharpening pencils is the creation of bespoke, boiler-plate scaffolding as one prevaricates about the guts of the project. I see evidence littered through my old repos - self-obsfucating technical debt encrusted on the interface between the project and RealWorld.</p>
 <p>So, starting at the pointy end of a new project, I aligned my workflow with stack, and started looking at a reproducible, exact startup routine. I followed the path to stack templates and wrote my own, which was kindy accepted by the crew.</p>
 <h2 id="design">design</h2>
@@ -69,4 +70,4 @@ main <span class="fu">=</span> <span class="kw">do</span>
   writeFile <span class="st">&quot;other/example.md&quot;</span> <span class="fu">$</span>
       <span class="st">&quot;$\\prod_{x=1}^{20} x = &quot;</span> <span class="fu">&lt;&gt;</span> show (fac <span class="dv">20</span>) <span class="fu">&lt;&gt;</span> <span class="st">&quot;$\n&quot;</span></code></pre></div>
 <p>Output from the code above appears in this readme.lhs when rendered with pandoc-include (except if you're reading this in github, sorry):</p>
-<p><span class="math inline">\(\prod_{x=1}^{20} x = 2432902008176640000\)</span></p>
+<p><span class="math inline">$\prod_{x=1}^{20} x = 2432902008176640000$</span></p>

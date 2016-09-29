@@ -2,8 +2,10 @@
 <script type="text/javascript" async
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-readme-lhs [![repo](https://a248.e.akamai.net/assets.github.com/images/icons/emoji/octocat.png)](https://github.com/tonyday567/readme-lhs) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.png)](https://travis-ci.org/tonyday567/readme-lhs) [html](https://tonyday567.github.io/readme-lhs.html)
-===============================================================================================================================================================================================================================================================================================================
+[readme-lhs](https://tonyday567.github.io/readme-lhs/index.html) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.png)](https://travis-ci.org/tonyday567/readme-lhs)
+================================================================================================================================================================================
+
+A literate haskell workflow.
 
 I've long suffered from procrastination in new projects. The coders
 equivalent for sharpening pencils is the creation of bespoke,

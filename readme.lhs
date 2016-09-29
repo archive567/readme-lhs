@@ -2,8 +2,10 @@
 other/header.md
 ```
 
-readme-lhs [![repo](https://a248.e.akamai.net/assets.github.com/images/icons/emoji/octocat.png)](https://github.com/tonyday567/readme-lhs) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.png)](https://travis-ci.org/tonyday567/readme-lhs) [html](https://tonyday567.github.io/readme-lhs.html)
+[readme-lhs](https://tonyday567.github.io/readme-lhs/index.html) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.png)](https://travis-ci.org/tonyday567/readme-lhs)
 ===
+
+    A literate haskell workflow.
 
 I've long suffered from procrastination in new projects. The coders equivalent for sharpening pencils is the creation of bespoke, boiler-plate scaffolding as one prevaricates about the guts of the project. I see evidence littered through my old repos - self-obsfucating technical debt encrusted on the interface between the project and RealWorld.
 
