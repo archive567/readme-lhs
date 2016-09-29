@@ -2,7 +2,7 @@
 <script type="text/javascript" async
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-<h1 id="readme-lhs-repo-build-status">readme-lhs <a href="https://github.com/tonyday567/readme-lhs"><img src="https://a248.e.akamai.net/assets.github.com/images/icons/emoji/octocat.png" alt="repo" /></a> <a href="https://travis-ci.org/tonyday567/readme-lhs"><img src="https://travis-ci.org/tonyday567/readme-lhs.png" alt="Build Status" /></a></h1>
+<h1 id="readme-lhs-repo-build-status-html">readme-lhs <a href="https://github.com/tonyday567/readme-lhs"><img src="https://a248.e.akamai.net/assets.github.com/images/icons/emoji/octocat.png" alt="repo" /></a> <a href="https://travis-ci.org/tonyday567/readme-lhs"><img src="https://travis-ci.org/tonyday567/readme-lhs.png" alt="Build Status" /></a> <a href="https://tonyday567.github.io/readme-lhs.html">html</a></h1>
 <p>I've long suffered from procrastination in new projects. The coders equivalent for sharpening pencils is the creation of bespoke, boiler-plate scaffolding as one prevaricates about the guts of the project. I see evidence littered through my old repos - self-obsfucating technical debt encrusted on the interface between the project and RealWorld.</p>
 <p>So, starting at the pointy end of a new project, I aligned my workflow with stack, and started looking at a reproducible, exact startup routine. I followed the path to stack templates and wrote my own, which was kindy accepted by the crew.</p>
 <h2 id="design">design</h2>
@@ -13,9 +13,9 @@
 <li>css for styling</li>
 <li>lhs as a valid haskell artform</li>
 <li>readme.lhs as a general purpose executable, tester, example holder and all-round centralising communication document.</li>
-<li>most commonly-used, and mostly-benign language flags, NoImplicitPrelude &amp; UnicodeSyntax</li>
+<li><p>most commonly-used, and mostly-benign language flags, NoImplicitPrelude &amp; UnicodeSyntax</p>
+<p>todo: make use of UnicodeSyntax</p></li>
 </ul>
-<p>todo: make use of UnicodeSyntax</p>
 <p>A partial list of what I let go of in the initial project build:</p>
 <ul class="incremental">
 <li>haddock. haddock and markdown don't mix well.</li>
@@ -33,8 +33,8 @@
 Copied executables to /Users/tonyday/.local/bin:
 - readme
 &quot;ok&quot;</code></pre>
-<p>I gather libraries I guess I'm needing, adding to .cabal and imports added to readme.lhs. Firing up a repl there, I start hacking some code together, saving the good bits to readme.lhs, adding notes and links, and getting some initial learnings coded up in main, so I can eyeball results. I use the following command to build, run, and render readme.lhs as html.</p>
-<pre><code>stack install &amp;&amp; readme &amp;&amp; pandoc -f markdown+lhs -i readme.lhs -t html -o readme.html --filter pandoc-include --mathjax</code></pre>
+<p>I gather libraries I guess I'm needing, adding to .cabal and imports added to readme.lhs. Firing up a repl there, I start hacking some code together, saving the good bits to readme.lhs, adding notes and links, and getting some initial learnings coded up in main, so I can eyeball results. I use the following command to build, run, and render an index.html to publish on github.</p>
+<pre><code>stack install &amp;&amp; readme &amp;&amp; pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax</code></pre>
 <p>todo:</p>
 <ul class="incremental">
 <li>[ ] can stack --file-watch help?</li>
@@ -68,5 +68,5 @@ main <span class="fu">=</span> <span class="kw">do</span>
   <span class="kw">let</span> fac n <span class="fu">=</span> foldr (\x g n&#39; <span class="ot">-&gt;</span> g (x<span class="fu">*</span>n&#39;)) identity [<span class="dv">1</span><span class="fu">..</span>n] <span class="dv">1</span>
   writeFile <span class="st">&quot;other/example.md&quot;</span> <span class="fu">$</span>
       <span class="st">&quot;$\\prod_{x=1}^{20} x = &quot;</span> <span class="fu">&lt;&gt;</span> show (fac <span class="dv">20</span>) <span class="fu">&lt;&gt;</span> <span class="st">&quot;$\n&quot;</span></code></pre></div>
-<p>Output from the code above appears in this readme.lhs when rendered with pandoc-include.</p>
+<p>Output from the code above appears in this readme.lhs when rendered with pandoc-include (except if you're reading this in github, sorry):</p>
 <p><span class="math inline">\(\prod_{x=1}^{20} x = 2432902008176640000\)</span></p>
