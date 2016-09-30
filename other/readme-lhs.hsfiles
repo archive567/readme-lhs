@@ -30,6 +30,8 @@ synopsis:
   See readme.lhs
 description:
   See readme.lhs
+category:
+  project
 homepage:
   https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}
 license:
