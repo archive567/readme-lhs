@@ -1,28 +1,25 @@
 {-# OPTIONS_GHC -Wall #-}
+{-# LANGUAGE DataKinds #-}
+
 module Main where
 
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text
-import Options.Applicative
+import Options.Generic
 import Protolude
 import Readme.Lhs
 import System.FilePath
 
 data Options = Options
-    { fileIn :: FilePath
-    , fileOut :: FilePath
-    } deriving (Show, Eq)
+    { filein :: FilePath <?> "file in"
+    , fileout :: FilePath <?> "file out"
+    } deriving (Generic, Show)
 
-options :: Options.Applicative.Parser Options
-options = Options
-    <$> (strOption
-        (long "in" <> short 'i' <> value "" <> help "file in"))
-    <*> (strOption
-        (long "out" <> short 'o' <> value "" <> help "file out"))
+instance ParseRecord Options
 
 consume :: Options -> IO ()
-consume (Options "" _) = pure ()
-consume (Options fi fo) = do
+consume (Options (Helpful "") _) = pure ()
+consume (Options (Helpful fi) (Helpful fo)) = do
     text <- readFile fi
     let fromHs = ".hs" == takeExtension fi
     let fo' = dropExtension fi ++ (if fromHs then ".lhs" else ".hs")
@@ -31,9 +28,4 @@ consume (Options fi fo) = do
         mapM_ (Text.hPutStrLn h) (Readme.Lhs.print (if fromHs then Lhs else Hs) f)
 
 main :: IO ()
-main = execParser opts >>= consume
-  where
-    opts = info (helper <*> options)
-      ( fullDesc
-      <> progDesc "almost isomorph of .lhs and .hs formats"
-      <> header "lhs")
+main = consume =<< getRecord "lhs"
