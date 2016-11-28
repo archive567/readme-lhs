@@ -98,6 +98,8 @@ code
 
 I tend to stick [protolude](http://www.stephendiehl.com/posts/protolude.html) in most modules, which really cuts down on boiler-plate.
 
+[hoogle](https://www.stackage.org/package/hoogle)
+
 > {-# OPTIONS_GHC -Wall #-}
 > {-# OPTIONS_GHC -fno-warn-type-defaults #-}
 > import Protolude
