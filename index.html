@@ -3,19 +3,26 @@
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 <h1 id="readme-lhs-build-status"><a href="https://tonyday567.github.io/readme-lhs/index.html">readme-lhs</a> <a href="https://travis-ci.org/tonyday567/readme-lhs"><img src="https://travis-ci.org/tonyday567/readme-lhs.png" alt="Build Status" /></a></h1>
-<p><em>starting a literate haskell narrative.</em></p>
-<p>I've long suffered from procrastination in new projects. The coders equivalent for sharpening pencils is the creation of bespoke, boiler-plate scaffolding as one prevaricates about the guts of the project. I see evidence littered through my old repos - self-obsfucating technical debt encrusted on the interface between the project and RealWorld.</p>
-<p>So, starting at the pointy end of a new project, I aligned my workflow with stack, and started looking at a reproducible, exact startup routine. I followed the path to stack templates and wrote my own (<code>stack new project-name readme-lhs</code>), which was kindy accepted.</p>
+<p><em>a literate haskell workflow.</em></p>
+<pre><code>stack build --copy-bins --exec &quot;readme&quot; --exec &quot;pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax&quot; --exec &quot;pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax&quot; --exec &quot;echo Yah, it succeeded!&quot; --file-watch</code></pre>
+<h2 id="simple">simple</h2>
+<p>To just use the stack template:</p>
+<pre><code>stack new project-name readme-lhs
+cd project-name
+stack install
+readme</code></pre>
+<p>and it should chirp back a cheery &quot;ok&quot;.</p>
+<p>The <a href="other/readme-lhs.hsfiles">template file</a> can always be edited, renamed etc and dropped into a directory, and stack will find it.</p>
 <h2 id="design">design</h2>
-<p>Stripping away optional extras, I went with a minimalist design:</p>
+<p>Stripping away optional extras, readme-lhs tries for a minimalist design:</p>
 <ul class="incremental">
-<li>markdown for all docs. Anything outside what markdown can do is me being too fancy.</li>
+<li>markdown for all docs. Anything outside what markdown can do is too fancy.</li>
 <li>pandoc for document conversion. <code>-f markdown+lhs</code> is a georgeous rendering of a .lhs file. I turn <a href="https://help.github.com/articles/user-organization-and-project-pages/">github pages</a> on using the User Pages site method for each project I'd like to blog, and render readme.lhs to index.html using pandoc.</li>
 <li>css for styling, but also dealing with github markdown style which is where many users will read your lhs.</li>
 <li>using lhs as a valid haskell artform</li>
 <li>readme.lhs as a general purpose executable, tester, example holder and all-round centralising communication document.</li>
 <li>a long list of the most commonly-used, and mostly-benign language flags, NoImplicitPrelude &amp; UnicodeSyntax. I call this -XHaskell2016 in private.</li>
-<li>the stack-recommended .travis.yml</li>
+<li>the stack-recommended .travis.yml (the complictaed one, so I can keep track of busting old ghc and lts versions)</li>
 <li>Embedding <a href="https://www.stackage.org/package/protolude">Protolude</a> as the replacement prelude.</li>
 </ul>
 <p>Here's what I threw out:</p>
@@ -26,31 +33,6 @@
 <li>app directory. The boundary between what the app is and what the library is is very fluid for me, and a source of technical debt as concepts bounce between directories.</li>
 </ul>
 <p>I then keep this repo around for phase 2, where a project takes a successful shape and and needs test and app boiler-plate.</p>
-<h2 id="workflow">Workflow</h2>
-<p>This design must be monadic cause I seem to get a hyper-efficient workflow for free! The template reproducably installs and runs out of the box, with zero TODO items littered through the structure.</p>
-<pre><code>stack install &amp;&amp; readme
-
-...
-
-Copied executables to /Users/tonyday/.local/bin:
-- readme
-&quot;ok&quot;</code></pre>
-<p>I gather libraries I guess I'm needing, adding to .cabal and imports added to readme.lhs. Firing up a repl there, I start hacking some code together, saving the good bits to readme.lhs, adding notes and links, and getting some initial learnings coded up in main, so I can eyeball results. I use the following command to build, run, and render an index.html so pushing is also auto-publishing on github.</p>
-<pre><code>stack install &amp;&amp; readme &amp;&amp; pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax &amp;&amp; pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax</code></pre>
-<p>todo:</p>
-<ul class="incremental">
-<li>[ ] can stack --file-watch help?</li>
-<li>[ ] should pandoc be wrapped in the stack version ie <code>stack exec pandoc --</code></li>
-<li>[ ] reproducible build instructions with stack-only environment (travis)</li>
-</ul>
-<h2 id="usage">usage</h2>
-<p>To just use the stack template:</p>
-<pre><code>stack new project-name readme-lhs
-cd project-name
-stack install
-readme</code></pre>
-<p>and it should chirp back a cheery &quot;ok&quot;.</p>
-<p>The <a href="other/readme-lhs.hsfiles">template file</a> can always be edited, renamed etc and dropped into a directory, and stack will find it.</p>
 <h2 id="lhs">lhs</h2>
 <p>I use both .lhs and .hs styles, and often need to flip between the two. In particular, hlint didn't always play nice with .lhs, and for a while I needed to flip from .lhs to .hs, run hlint, and then flip back to .lhs.</p>
 <p>lhs makes no attempt to account for haddock and will thus not be suitable for most people.</p>
@@ -61,6 +43,7 @@ stack install
 lhs readme.lhs</code></pre>
 <h2 id="code">code</h2>
 <p>I tend to stick <a href="http://www.stephendiehl.com/posts/protolude.html">protolude</a> in most modules, which really cuts down on boiler-plate.</p>
+<p><a href="https://www.stackage.org/package/hoogle">hoogle</a></p>
 <div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# OPTIONS_GHC -Wall #-}</span>
 <span class="ot">{-# OPTIONS_GHC -fno-warn-type-defaults #-}</span>
 <span class="kw">import </span><span class="dt">Protolude</span>
