@@ -25,7 +25,7 @@ stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme
 > import Protolude
 >
 > main :: IO ()
-> main = print ("ok" :: Text)
+> main = putStrLn ("ok" :: Text)
 
 {-# START_FILE {{name}}.cabal #-}
 name:
@@ -55,8 +55,6 @@ build-type:
 cabal-version:
   >=1.14
 extra-source-files:
-  readme.md
-  index.html
   stack.yaml
 library
   default-language:
