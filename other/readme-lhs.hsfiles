@@ -16,6 +16,12 @@ To build & run:
 stack install && readme
 ~~~
 
+To build, run & render:
+
+~~~
+stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded!" --file-watch
+~~~
+
 > import Protolude
 >
 > main :: IO ()
@@ -43,12 +49,15 @@ author:
 maintainer:
   {{author-email}}{{^author-email}}example@example.com{{/author-email}}
 copyright:
-  {{copyright}}{{^copyright}}{{year}}{{^year}}2016{{/year}} {{authorName}}{{^authorName}}Author name here{{/authorName}}{{/copyright}}
+  {{copyright}}{{^copyright}}{{year}}{{^year}}2017{{/year}} {{authorName}}{{^authorName}}Author name here{{/authorName}}{{/copyright}}
 build-type:
   Simple
 cabal-version:
   >=1.14
-
+extra-source-files:
+  readme.md
+  index.html
+  stack.yaml
 library
   default-language:
     Haskell2010
@@ -154,12 +163,16 @@ source-repository head
 /.stack-work/
 TAGS
 
+{-# START_FILE .gitattributes #-}
+other/* linguist-documentation
+index.html linguist-documentation
+
 {-# START_FILE Setup.hs #-}
 import Distribution.Simple
 main = defaultMain
 
 {-# START_FILE LICENSE #-}
-Copyright {{author-name}}{{^author-name}}Author name here{{/author-name}} (c) {{year}}{{^year}}2016{{/year}}
+Copyright {{author-name}}{{^author-name}}Author name here{{/author-name}} (c) {{year}}{{^year}}2017{{/year}}
 
 All rights reserved.
 

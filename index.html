@@ -4,16 +4,31 @@
 </script>
 <h1 id="readme-lhs-build-status"><a href="https://tonyday567.github.io/readme-lhs/index.html">readme-lhs</a> <a href="https://travis-ci.org/tonyday567/readme-lhs"><img src="https://travis-ci.org/tonyday567/readme-lhs.png" alt="Build Status" /></a></h1>
 <p><em>a literate haskell workflow.</em></p>
-<pre><code>stack build --copy-bins --exec &quot;readme&quot; --exec &quot;pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax&quot; --exec &quot;pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax&quot; --exec &quot;echo Yah, it succeeded!&quot; --file-watch</code></pre>
-<h2 id="simple">simple</h2>
-<p>To just use the stack template:</p>
+<pre>
+  <code style="white-space: pre-wrap;">
+stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded!" --file-watch
+  </code>
+</pre>
+<p>The command above is a major milestone in my personal workflow and I'm <a href="https://github.com/commercialhaskell/stack/issues/2955">this</a> close. Once it works I can type <code>stack new project-name readme-lhs &amp;&amp; cd project-name</code>, fire up this command and start cutting code and docs in readme.lhs. On save, I get:</p>
+<ul class="incremental">
+<li>an automated compilation loop for code</li>
+<li>execution of a main function</li>
+<li>code and comments rendered in html</li>
+<li>code and comments rendered as a readme.md</li>
+<li>ability to use maths formulae via mathjax</li>
+<li>ability to mix code and results using <a href="https://hackage.haskell.org/package/pandoc-include">pandoc-include</a></li>
+</ul>
+<p>A poor haskellers imitation of jupyter, sure, but until we climb the curve of tool maturity this will do me as a quick project start.</p>
+<h1 id="usage">usage</h1>
+<h2 id="template">template</h2>
+<p>The template produces a shell project that builds out-of-the-box.</p>
 <pre><code>stack new project-name readme-lhs
 cd project-name
 stack install
 readme</code></pre>
 <p>and it should chirp back a cheery &quot;ok&quot;.</p>
 <p>The <a href="other/readme-lhs.hsfiles">template file</a> can always be edited, renamed etc and dropped into a directory, and stack will find it.</p>
-<h2 id="design">design</h2>
+<h1 id="design-wonkery">design wonkery</h1>
 <p>Stripping away optional extras, readme-lhs tries for a minimalist design:</p>
 <ul class="incremental">
 <li>markdown for all docs. Anything outside what markdown can do is too fancy.</li>
@@ -33,16 +48,16 @@ readme</code></pre>
 <li>app directory. The boundary between what the app is and what the library is is very fluid for me, and a source of technical debt as concepts bounce between directories.</li>
 </ul>
 <p>I then keep this repo around for phase 2, where a project takes a successful shape and and needs test and app boiler-plate.</p>
-<h2 id="lhs">lhs</h2>
+<h1 id="lhs-executable">lhs executable</h1>
 <p>I use both .lhs and .hs styles, and often need to flip between the two. In particular, hlint didn't always play nice with .lhs, and for a while I needed to flip from .lhs to .hs, run hlint, and then flip back to .lhs.</p>
 <p>lhs makes no attempt to account for haddock and will thus not be suitable for most people.</p>
 <p>To install and use lhs:</p>
 <pre><code>git clone https://github.com/tonyday567/readme-lhs
 cd readme-lhs
 stack install
-lhs readme.lhs</code></pre>
-<h2 id="code">code</h2>
-<p>I tend to stick <a href="http://www.stephendiehl.com/posts/protolude.html">protolude</a> in most modules, which really cuts down on boiler-plate.</p>
+lhs --file-in readme.lhs --file-out readme.hs</code></pre>
+<h1 id="code">code</h1>
+<p><a href="http://www.stephendiehl.com/posts/protolude.html">protolude</a></p>
 <p><a href="https://www.stackage.org/package/hoogle">hoogle</a></p>
 <div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# OPTIONS_GHC -Wall #-}</span>
 <span class="ot">{-# OPTIONS_GHC -fno-warn-type-defaults #-}</span>

@@ -7,12 +7,35 @@
 
 *a literate haskell workflow.*
 
-    stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded!" --file-watch
+<pre>
+  <code style="white-space: pre-wrap;">
+stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded!" --file-watch
+  </code>
+</pre>
+The command above is a major milestone in my personal workflow and I'm
+[this](https://github.com/commercialhaskell/stack/issues/2955) close.
+Once it works I can type
+`stack new project-name readme-lhs && cd project-name`, fire up this
+command and start cutting code and docs in readme.lhs. On save, I get:
 
-simple
-------
+-   an automated compilation loop for code
+-   execution of a main function
+-   code and comments rendered in html
+-   code and comments rendered as a readme.md
+-   ability to use maths formulae via mathjax
+-   ability to mix code and results using
+    [pandoc-include](https://hackage.haskell.org/package/pandoc-include)
 
-To just use the stack template:
+A poor haskellers imitation of jupyter, sure, but until we climb the
+curve of tool maturity this will do me as a quick project start.
+
+usage
+=====
+
+template
+--------
+
+The template produces a shell project that builds out-of-the-box.
 
     stack new project-name readme-lhs
     cd project-name
@@ -24,8 +47,8 @@ and it should chirp back a cheery "ok".
 The [template file](other/readme-lhs.hsfiles) can always be edited,
 renamed etc and dropped into a directory, and stack will find it.
 
-design
-------
+design wonkery
+==============
 
 Stripping away optional extras, readme-lhs tries for a minimalist
 design:
@@ -69,8 +92,8 @@ Here's what I threw out:
 I then keep this repo around for phase 2, where a project takes a
 successful shape and and needs test and app boiler-plate.
 
-lhs
----
+lhs executable
+==============
 
 I use both .lhs and .hs styles, and often need to flip between the two.
 In particular, hlint didn't always play nice with .lhs, and for a while
@@ -85,14 +108,12 @@ To install and use lhs:
     git clone https://github.com/tonyday567/readme-lhs
     cd readme-lhs
     stack install
-    lhs readme.lhs
+    lhs --file-in readme.lhs --file-out readme.hs
 
 code
-----
+====
 
-I tend to stick
-[protolude](http://www.stephendiehl.com/posts/protolude.html) in most
-modules, which really cuts down on boiler-plate.
+[protolude](http://www.stephendiehl.com/posts/protolude.html)
 
 [hoogle](https://www.stackage.org/package/hoogle)
 
