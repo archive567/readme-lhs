@@ -144,9 +144,7 @@ executable readme
     readme.lhs
   build-depends:
     base >= 4.7 && < 5,
-    protolude,
-    text,
-    foldl
+    protolude
   default-extensions:
     NoImplicitPrelude,
     UnicodeSyntax,
