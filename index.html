@@ -37,7 +37,7 @@ readme</code></pre>
 <li>using lhs as a valid haskell artform</li>
 <li>readme.lhs as a general purpose executable, tester, example holder and all-round centralising communication document.</li>
 <li>a long list of the most commonly-used, and mostly-benign language flags, NoImplicitPrelude &amp; UnicodeSyntax. I call this -XHaskell2016 in private.</li>
-<li>the stack-recommended .travis.yml (the complictaed one, so I can keep track of busting old ghc and lts versions)</li>
+<li>the <a href="https://docs.haskellstack.org/en/stable/travis_ci/">stack-recommended .travis.yml</a> (the complicated one, so I can keep track of cabal issues, ghc and the last few lts versions)</li>
 <li>Embedding <a href="https://www.stackage.org/package/protolude">Protolude</a> as the replacement prelude.</li>
 </ul>
 <p>Here's what I threw out:</p>
@@ -57,7 +57,7 @@ cd readme-lhs
 stack install
 lhs --file-in readme.lhs --file-out readme.hs</code></pre>
 <h1 id="code">code</h1>
-<p><a href="http://www.stephendiehl.com/posts/protolude.html">protolude</a></p>
+<p><a href="https://www.stackage.org/package/protolude">protolude</a></p>
 <p><a href="https://www.stackage.org/package/hoogle">hoogle</a></p>
 <div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# OPTIONS_GHC -Wall #-}</span>
 <span class="ot">{-# OPTIONS_GHC -fno-warn-type-defaults #-}</span>
@@ -71,3 +71,5 @@ main <span class="fu">=</span> <span class="kw">do</span>
       <span class="st">&quot;$\\prod_{x=1}^{20} x = &quot;</span> <span class="fu">&lt;&gt;</span> show (fac <span class="dv">20</span>) <span class="fu">&lt;&gt;</span> <span class="st">&quot;$\n&quot;</span></code></pre></div>
 <p>Output from the code above appears in this readme.lhs when rendered with pandoc-include (except if you're reading this as the repo readme.md, sorry):</p>
 <p><span class="math inline">\(\prod_{x=1}^{20} x = 2432902008176640000\)</span></p>
+<h1 id="colophone">colophone</h1>
+<p><a href="https://haskell-lang.org/">Haskell</a> code is managed using <a href="https://docs.haskellstack.org/en/stable/README/">stack</a> and written with <a href="spacemacs.org">spacemacs</a> using the <a href="http://commercialhaskell.github.io/intero/">intero</a> engine. <a href="https://www.stackage.org/package/protolude">Protolude</a> is our prelude of choice. Documentation is written using <a href="">markdown</a> and rendered with <a href="http://pandoc.org/">pandoc</a> and <a href="https://hackage.haskell.org/package/pandoc-include">pandoc-include</a>. Repos and all blog material is hosted via <a href="https://github.com/">github</a> and tested with <a href="https://travis-ci.org/">travis ci</a>.</p>

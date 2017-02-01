@@ -68,8 +68,10 @@ design:
 -   a long list of the most commonly-used, and mostly-benign language
     flags, NoImplicitPrelude & UnicodeSyntax. I call this -XHaskell2016
     in private.
--   the stack-recommended .travis.yml (the complictaed one, so I can
-    keep track of busting old ghc and lts versions)
+-   the [stack-recommended
+    .travis.yml](https://docs.haskellstack.org/en/stable/travis_ci/)
+    (the complicated one, so I can keep track of cabal issues, ghc and
+    the last few lts versions)
 -   Embedding [Protolude](https://www.stackage.org/package/protolude) as
     the replacement prelude.
 
@@ -113,7 +115,7 @@ To install and use lhs:
 code
 ====
 
-[protolude](http://www.stephendiehl.com/posts/protolude.html)
+[protolude](https://www.stackage.org/package/protolude)
 
 [hoogle](https://www.stackage.org/package/hoogle)
 
@@ -135,3 +137,17 @@ pandoc-include (except if you're reading this as the repo readme.md,
 sorry):
 
 $\prod_{x=1}^{20} x = 2432902008176640000$
+
+colophone
+=========
+
+[Haskell](https://haskell-lang.org/) code is managed using
+[stack](https://docs.haskellstack.org/en/stable/README/) and written
+with [spacemacs](spacemacs.org) using the
+[intero](http://commercialhaskell.github.io/intero/) engine.
+[Protolude](https://www.stackage.org/package/protolude) is our prelude
+of choice. Documentation is written using [markdown]() and rendered with
+[pandoc](http://pandoc.org/) and
+[pandoc-include](https://hackage.haskell.org/package/pandoc-include).
+Repos and all blog material is hosted via [github](https://github.com/)
+and tested with [travis ci](https://travis-ci.org/).
