@@ -9,11 +9,11 @@ other/header.md
 
 <pre>
   <code style="white-space: pre-wrap;">
-stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded!" --file-watch
+stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded" --file-watch
   </code>
 </pre>
 
-The command above is a major milestone in my personal workflow and I'm [this](https://github.com/commercialhaskell/stack/issues/2955) close.  Once it works I can type `stack new project-name readme-lhs && cd project-name`, fire up this command and start cutting code and docs in readme.lhs.  On save, I get:
+The command above is a major milestone in my personal workflow.  I switch between osx at home and windows at work and, subject to [this](https://github.com/commercialhaskell/stack/issues/2955), I'm getting consistent and fast startups for new projects. I type `stack new project-name readme-lhs && cd project-name`, fire up this command and start cutting code and docs in readme.lhs.  On save, I get:
 
 - an automated compilation loop for code
 - execution of a main function
@@ -40,6 +40,15 @@ readme
 ~~~
 
 and it should chirp back a cheery "ok".
+
+If you dont want to pollute the global `~/.local/bin`, you can drop back to
+
+~~~
+stack new project-name readme-lhs
+cd project-name
+stack build
+$(stack path --local-install-root)/bin/readme
+~~~
 
 The [template file](other/readme-lhs.hsfiles) can always be edited, renamed etc and dropped into a directory, and stack will find it.
 

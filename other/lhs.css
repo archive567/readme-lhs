@@ -1,7 +1,7 @@
 body {
     background-color: #f6f6f6;
     color: #141414;
-    font-family: "Avenir", "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: "Futura", "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-size: 16px;
     line-height: 1.6;
     word-wrap: break-word;
@@ -13,14 +13,14 @@ body {
 body strong {
     font-weightht: bold; }
 body h1 {
-    font-family: "lucida console", "9x15", "DejaVu Sans Mono", "Monaco";
-    font-size: 24px;
-    margin: 15px 0;
+    font-family: "Rockwell","Futura", "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 32px;
+    margin: 16px 0 32px 0;
     line-height: 1.1; }
 body h2 {
-    font-family: "lucida console", "9x15", "DejaVu Sans Mono", "Monaco";
+    font-family: "Rockwell","Futura", "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-size: 20px;
-    margin: 15px 0;
+    margin: 40px 0 20px 0;
     line-height: 1.1; }
 body a {
     background-color: transparent;

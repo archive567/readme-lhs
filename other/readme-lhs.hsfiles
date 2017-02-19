@@ -19,7 +19,7 @@ stack install && readme
 To build, run & render:
 
 ~~~
-stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded!" --file-watch
+stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded" --file-watch
 ~~~
 
 > import Protolude
@@ -31,7 +31,7 @@ stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme
 name:
   {{name}}
 version:
-  0.1.0.0
+  0.1.0
 synopsis:
   See readme.lhs
 description:

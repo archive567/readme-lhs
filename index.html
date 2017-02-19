@@ -6,10 +6,10 @@
 <p><em>a literate haskell workflow.</em></p>
 <pre>
   <code style="white-space: pre-wrap;">
-stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded!" --file-watch
+stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded" --file-watch
   </code>
 </pre>
-<p>The command above is a major milestone in my personal workflow and I'm <a href="https://github.com/commercialhaskell/stack/issues/2955">this</a> close. Once it works I can type <code>stack new project-name readme-lhs &amp;&amp; cd project-name</code>, fire up this command and start cutting code and docs in readme.lhs. On save, I get:</p>
+<p>The command above is a major milestone in my personal workflow. I switch between osx at home and windows at work and, subject to <a href="https://github.com/commercialhaskell/stack/issues/2955">this</a>, I'm getting consistent and fast startups for new projects. I type <code>stack new project-name readme-lhs &amp;&amp; cd project-name</code>, fire up this command and start cutting code and docs in readme.lhs. On save, I get:</p>
 <ul class="incremental">
 <li>an automated compilation loop for code</li>
 <li>execution of a main function</li>
@@ -27,6 +27,11 @@ cd project-name
 stack install
 readme</code></pre>
 <p>and it should chirp back a cheery &quot;ok&quot;.</p>
+<p>If you dont want to pollute the global <code>~/.local/bin</code>, you can drop back to</p>
+<pre><code>stack new project-name readme-lhs
+cd project-name
+stack build
+$(stack path --local-install-root)/bin/readme</code></pre>
 <p>The <a href="other/readme-lhs.hsfiles">template file</a> can always be edited, renamed etc and dropped into a directory, and stack will find it.</p>
 <h1 id="design-wonkery">design wonkery</h1>
 <p>Stripping away optional extras, readme-lhs tries for a minimalist design:</p>
