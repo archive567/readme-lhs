@@ -9,7 +9,7 @@
 stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded" --file-watch
   </code>
 </pre>
-<p>The command above is a major milestone in my personal workflow. I switch between osx at home and windows at work and, subject to <a href="https://github.com/commercialhaskell/stack/issues/2955">this</a>, I'm getting consistent and fast startups for new projects. I type <code>stack new project-name readme-lhs &amp;&amp; cd project-name</code>, fire up this command and start cutting code and docs in readme.lhs. On save, I get:</p>
+<p>The command above is a major milestone in my personal workflow. I switch between osx at home and windows at work and I'm getting consistent and fast startups for new projects. I type <code>stack new project-name readme-lhs &amp;&amp; cd project-name</code>, fire up this command and start cutting code and docs in readme.lhs. On save, I get:</p>
 <ul class="incremental">
 <li>an automated compilation loop for code</li>
 <li>execution of a main function</li>

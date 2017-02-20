@@ -13,7 +13,7 @@ stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme
   </code>
 </pre>
 
-The command above is a major milestone in my personal workflow.  I switch between osx at home and windows at work and, subject to [this](https://github.com/commercialhaskell/stack/issues/2955), I'm getting consistent and fast startups for new projects. I type `stack new project-name readme-lhs && cd project-name`, fire up this command and start cutting code and docs in readme.lhs.  On save, I get:
+The command above is a major milestone in my personal workflow.  I switch between osx at home and windows at work and I'm getting consistent and fast startups for new projects. I type `stack new project-name readme-lhs && cd project-name`, fire up this command and start cutting code and docs in readme.lhs.  On save, I get:
 
 - an automated compilation loop for code
 - execution of a main function

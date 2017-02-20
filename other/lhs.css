@@ -30,7 +30,7 @@ body a {
     text-decoration: none; }
 body a:hover {
     border-color: #010406;
-    text-decoration: underline;
+    text-decoration: none;
     outline: 0; }
 body img {
     max-width: 100%;
