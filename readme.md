@@ -12,9 +12,9 @@
 stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded" --file-watch
   </code>
 </pre>
+
 The command above is a major milestone in my personal workflow. I switch
-between osx at home and windows at work and, subject to
-[this](https://github.com/commercialhaskell/stack/issues/2955), I'm
+between osx at home and windows at work and I'm
 getting consistent and fast startups for new projects. I type
 `stack new project-name readme-lhs && cd project-name`, fire up this
 command and start cutting code and docs in readme.lhs. On save, I get:

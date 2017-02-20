@@ -1,32 +1,35 @@
 body {
     background-color: #f6f6f6;
-    color: #141414;
-    font-family: "Futura", "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    color: #3d3d3d;
+    font-family: "Futura", "Century Gothic", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 16px;
     line-height: 1.6;
     word-wrap: break-word;
     box-sizing: border-box;
     min-width: 200px;
-    max-width: 980px;
+    max-width: 660px;
     margin: 0 auto;
     padding: 45px; }
 body strong {
     font-weightht: bold; }
 body h1 {
-    font-family: "Rockwell","Futura", "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: "Rockwell", "Futura", "Century Gothic", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 32px;
     margin: 16px 0 32px 0;
     line-height: 1.1; }
 body h2 {
-    font-family: "Rockwell","Futura", "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    font-size: 20px;
+    font-family: "Rockwell", "Futura", "Century Gothic", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 24px;
     margin: 40px 0 20px 0;
     line-height: 1.1; }
 body a {
     background-color: transparent;
-    color: #4078c0;
+    border-bottom: 2px solid #e1e1e1;
+    # color: #4078c0;
+    color: #3d3d3d;
     text-decoration: none; }
 body a:hover {
+    border-color: #010406;
     text-decoration: underline;
     outline: 0; }
 body img {
