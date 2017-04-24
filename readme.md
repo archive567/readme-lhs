@@ -1,161 +1,40 @@
-<meta charset="utf-8"> <link rel="stylesheet" href="other/lhs.css">
-<script type="text/javascript" async
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 [readme-lhs](https://tonyday567.github.io/readme-lhs/index.html) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.png)](https://travis-ci.org/tonyday567/readme-lhs)
-================================================================================================================================================================================
+===
 
-*a literate haskell workflow.*
+See https://tonyday567.github.io/readme-lhs/index.html for project description.
 
-<pre>
-  <code style="white-space: pre-wrap;">
-stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded" --file-watch
-  </code>
-</pre>
-The command above is a major milestone in my personal workflow. I switch
-between osx at home and windows at work and I'm getting consistent and
-fast startups for new projects. I type
-`stack new project-name readme-lhs && cd project-name`, fire up this
-command and start cutting code and docs in readme.lhs. On save, I get:
+compilation recipe
+---
 
--   an automated compilation loop for code
--   execution of a main function
--   code and comments rendered in html
--   code and comments rendered as a readme.md
--   ability to use maths formulae via mathjax
--   ability to mix code and results using
-    [pandoc-include](https://hackage.haskell.org/package/pandoc-include)
+~~~
+stack build --test --exec "$(stack path --local-install-root)/bin/readme-lhs-example" --exec "$(stack path --local-bin)/pandoc -f markdown+lhs -i app/example.lhs -t html -o index.html --filter pandoc-include --mathjax" --file-watch
+~~~
 
-A poor haskellers imitation of jupyter, sure, but until we climb the
-curve of tool maturity this will do me as a quick project start.
+The above `recipe` builds the project, runs the test, renders this file as html, and then watches for file changes.  Pandoc and pandoc-include are assumed to be installed via stack, so you might have to:
 
-usage
-=====
+~~~
+stack install pandoc
+stack install pandoc-include
+~~~
 
 template
---------
+---
 
-The template produces a shell project that builds out-of-the-box.
+The bare bones of this process is available as a stack template:
 
-    stack new project-name readme-lhs
-    cd project-name
-    stack install
-    readme
+~~~
+stack new project-name readme-lhs
+cd project-name
+stack build
+$(stack path --local-install-root)/bin/readme-lhs-example
+~~~
 
-and it should chirp back a cheery "ok".
+Which should produce:
 
-If you dont want to pollute the global `~/.local/bin`, you can drop back
-to
+~~~
+Examples: 2  Tried: 2  Errors: 0  Failures: 0
 
-    stack new project-name readme-lhs
-    cd project-name
-    stack build
-    $(stack path --local-install-root)/bin/readme
+All 0 tests passed (0.00s)
 
-The [template file](other/readme-lhs.hsfiles) can always be edited,
-renamed etc and dropped into a directory, and stack will find it.
-
-design wonkery
-==============
-
-Stripping away optional extras, readme-lhs tries for a minimalist
-design:
-
--   markdown for all docs. Anything outside what markdown can do is
-    too fancy.
--   pandoc for document conversion. `-f markdown+lhs` is a georgeous
-    rendering of a .lhs file. I turn [github
-    pages](https://help.github.com/articles/user-organization-and-project-pages/)
-    on using the User Pages site method for each project I'd like to
-    blog, and render readme.lhs to index.html using pandoc.
--   css for styling, but also dealing with github markdown style which
-    is where many users will read your lhs.
--   using lhs as a valid haskell artform
--   readme.lhs as a general purpose executable, tester, example holder
-    and all-round centralising communication document.
--   a long list of the most commonly-used, and mostly-benign language
-    flags, NoImplicitPrelude & UnicodeSyntax. I call this -XHaskell2016
-    in private.
--   the [stack-recommended
-    .travis.yml](https://docs.haskellstack.org/en/stable/travis_ci/)
-    (the complicated one, so I can keep track of cabal issues, ghc and
-    the last few lts versions)
--   Embedding [Protolude](https://www.stackage.org/package/protolude) as
-    the replacement prelude.
-
-Here's what I threw out:
-
--   haddock. The design space of using markdown as a complete
-    replacement is fresh territory.
--   test directory. I looked through my test and example directories and
-    noted the mess in many. I love to test - creating a realistic
-    arbitrary instance is the best way to get to know your data
-    structures - but tests and multiple examples didn't belong in the
-    start-up phase.
--   hakyll. For me, markdown created for a separate blogging process is
-    better inside the actual project as readme's - my hakyll site rots
-    pretty quickly.
--   app directory. The boundary between what the app is and what the
-    library is is very fluid for me, and a source of technical debt as
-    concepts bounce between directories.
-
-I then keep this repo around for phase 2, where a project takes a
-successful shape and and needs test and app boiler-plate.
-
-lhs executable
-==============
-
-I use both .lhs and .hs styles, and often need to flip between the two.
-In particular, hlint didn't always play nice with .lhs, and for a while
-I needed to flip from .lhs to .hs, run hlint, and then flip back to
-.lhs.
-
-lhs makes no attempt to account for haddock and will thus not be
-suitable for most people.
-
-To install and use lhs:
-
-    git clone https://github.com/tonyday567/readme-lhs
-    cd readme-lhs
-    stack install
-    lhs --file-in readme.lhs --file-out readme.hs
-
-code
-====
-
-[protolude](https://www.stackage.org/package/protolude)
-
-[hoogle](https://www.stackage.org/package/hoogle)
-
-``` {.sourceCode .literate .haskell}
-{-# OPTIONS_GHC -Wall #-}
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
-import Protolude
-
-main :: IO ()
-main = do
-  print "readme-lhs library"
-  let fac n = foldr (\x g n' -> g (x*n')) identity [1..n] 1
-  writeFile "other/example.md" $
-      "$\\prod_{x=1}^{20} x = " <> show (fac 20) <> "$\n"
-```
-
-Output from the code above appears in this readme.lhs when rendered with
-pandoc-include (except if you're reading this as the repo readme.md,
-sorry):
-
-$\prod_{x=1}^{20} x = 2432902008176640000$
-
-colophone
-=========
-
-[Haskell](https://haskell-lang.org/) code is managed using
-[stack](https://docs.haskellstack.org/en/stable/README/) and written
-with [spacemacs](spacemacs.org) using the
-[intero](http://commercialhaskell.github.io/intero/) engine.
-[Protolude](https://www.stackage.org/package/protolude) is our prelude
-of choice. Documentation is written using [markdown]() and rendered with
-[pandoc](http://pandoc.org/) and
-[pandoc-include](https://hackage.haskell.org/package/pandoc-include).
-Repos and all blog material is hosted via [github](https://github.com/)
-and tested with [travis ci](https://travis-ci.org/).
+3628800 👍
+~~~

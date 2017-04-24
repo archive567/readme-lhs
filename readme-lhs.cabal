@@ -31,75 +31,24 @@ extra-source-files:
   other/lhs.css
   other/header.md
   other/readme-lhs.hsfiles
-library
-  default-language:
-    Haskell2010
-  ghc-options:
-  hs-source-dirs:
-    src
-  exposed-modules:
-    Readme.Lhs
-  build-depends:
-    base >= 4.7 && < 5,
-    protolude,
-    foldl,
-    text,
-    attoparsec
-  default-extensions:
-    NoImplicitPrelude,
-    UnicodeSyntax,
-    BangPatterns,
-    BinaryLiterals,
-    DeriveFoldable,
-    DeriveFunctor,
-    DeriveGeneric,
-    DeriveTraversable,
-    DisambiguateRecordFields,
-    EmptyCase,
-    FlexibleContexts,
-    FlexibleInstances,
-    FunctionalDependencies,
-    GADTSyntax,
-    InstanceSigs,
-    KindSignatures,
-    LambdaCase,
-    MonadComprehensions,
-    MultiParamTypeClasses,
-    MultiWayIf,
-    NegativeLiterals,
-    OverloadedStrings,
-    ParallelListComp,
-    PartialTypeSignatures,
-    PatternSynonyms,
-    RankNTypes,
-    RecordWildCards,
-    RecursiveDo,
-    ScopedTypeVariables,
-    TupleSections,
-    TypeFamilies,
-    TypeOperators
 
-executable lhs
+executable readme-lhs-example
   default-language:
     Haskell2010
-  hs-source-dirs:
-    app
-  main-is:
-    Main.hs
   ghc-options:
+    -funbox-strict-fields
+    -fforce-recomp
     -threaded
     -rtsopts
     -with-rtsopts=-N
+  hs-source-dirs:
+    app
+  main-is:
+    example.lhs
   build-depends:
     base >= 4.7 && < 5,
     protolude,
-    readme-lhs,
-    optparse-generic,
-    filepath,
-    text,
-    containers
-  default-language:
-    Haskell2010
+    optparse-generic
   default-extensions:
     NoImplicitPrelude,
     UnicodeSyntax,
@@ -132,18 +81,26 @@ executable lhs
     ScopedTypeVariables,
     TupleSections,
     TypeFamilies,
-    TypeOperators
+    TypeOperators,
+    ExtendedDefaultRules
 
-executable readme
+test-suite test
   default-language:
     Haskell2010
-  ghc-options:
+  type:
+    exitcode-stdio-1.0
   hs-source-dirs:
-    ./
+    test
   main-is:
-    readme.lhs
+    test.hs
   build-depends:
     base >= 4.7 && < 5,
+    tasty,
+    HUnit,
+    tasty-hunit,
+    QuickCheck,
+    tasty-quickcheck,
+    doctest,
     protolude
   default-extensions:
     NoImplicitPrelude,
@@ -177,58 +134,8 @@ executable readme
     ScopedTypeVariables,
     TupleSections,
     TypeFamilies,
-    TypeOperators
-
-test-suite test
-  default-language:
-    Haskell2010
-  type:
-    exitcode-stdio-1.0
-  hs-source-dirs:
-    test
-  main-is:
-    test.lhs
-  build-depends:
-    base >= 4.7 && < 5,
-    protolude,
-    tasty,
-    HUnit,
-    tasty-hunit,
-    readme-lhs,
-    text
-  default-extensions:
-    NoImplicitPrelude,
-    UnicodeSyntax,
-    BangPatterns,
-    BinaryLiterals,
-    DeriveFoldable,
-    DeriveFunctor,
-    DeriveGeneric,
-    DeriveTraversable,
-    DisambiguateRecordFields,
-    EmptyCase,
-    FlexibleContexts,
-    FlexibleInstances,
-    FunctionalDependencies,
-    GADTSyntax,
-    InstanceSigs,
-    KindSignatures,
-    LambdaCase,
-    MonadComprehensions,
-    MultiParamTypeClasses,
-    MultiWayIf,
-    NegativeLiterals,
-    OverloadedStrings,
-    ParallelListComp,
-    PartialTypeSignatures,
-    PatternSynonyms,
-    RankNTypes,
-    RecordWildCards,
-    RecursiveDo,
-    ScopedTypeVariables,
-    TupleSections,
-    TypeFamilies,
-    TypeOperators
+    TypeOperators,
+    ExtendedDefaultRules
 
 source-repository head
   type:

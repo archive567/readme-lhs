@@ -2,79 +2,78 @@
 <script type="text/javascript" async
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-<h1 id="readme-lhs-build-status"><a href="https://tonyday567.github.io/readme-lhs/index.html">readme-lhs</a> <a href="https://travis-ci.org/tonyday567/readme-lhs"><img src="https://travis-ci.org/tonyday567/readme-lhs.png" alt="Build Status" /></a></h1>
-<p><em>a literate haskell workflow.</em></p>
-<pre>
-  <code style="white-space: pre-wrap;">
-stack build --copy-bins --exec "readme" --exec "pandoc -f markdown+lhs -i readme.lhs -t html -o index.html --filter pandoc-include --mathjax" --exec "pandoc -f markdown+lhs -i readme.lhs -t markdown -o readme.md --filter pandoc-include --mathjax" --exec "echo Yah, it succeeded" --file-watch
-  </code>
-</pre>
-<p>The command above is a major milestone in my personal workflow. I switch between osx at home and windows at work and I'm getting consistent and fast startups for new projects. I type <code>stack new project-name readme-lhs &amp;&amp; cd project-name</code>, fire up this command and start cutting code and docs in readme.lhs. On save, I get:</p>
+<blockquote cite>
+The language in which we express our ideas has a strong influence on our thought processes. ~ Knuth
+</blockquote>
+<h1 id="readme-lhs">readme-lhs</h1>
+<p><a href="https://github.com/tonyday567/readme-lhs">Readme-lhs</a> is an example of mixing <a href="https://daringfireball.net/projects/markdown/syntax">markdown</a> and haskell code in literate style, aiming for rapid development from initial idea to rendered description. The project:</p>
 <ul class="incremental">
-<li>an automated compilation loop for code</li>
-<li>execution of a main function</li>
-<li>code and comments rendered in html</li>
-<li>code and comments rendered as a readme.md</li>
-<li>ability to use maths formulae via mathjax</li>
-<li>ability to mix code and results using <a href="https://hackage.haskell.org/package/pandoc-include">pandoc-include</a></li>
+<li>aims for a minimal but complete startup phase for a haskell project.</li>
+<li>Targets <a href="http://pandoc.org/">pandoc</a> for document conversion. <code>-f markdown+lhs</code> is a georgeous rendering of a .lhs file.</li>
+<li>utilises stack for a tight compilation loop, from initial code to rendered html, including computational results (via <a href="https://hackage.haskell.org/package/pandoc-include">pandoc-include</a>).</li>
+<li>Targets <a href="https://help.github.com/articles/user-organization-and-project-pages/">github pages</a> for immediate publication on <code>git push</code>.</li>
 </ul>
-<p>A poor haskellers imitation of jupyter, sure, but until we climb the curve of tool maturity this will do me as a quick project start.</p>
-<h1 id="usage">usage</h1>
+<p>The <code>app/example.lhs</code> is then a one-stop shop for links, ideas, app, tester and example holder.</p>
+<h2 id="compilation-recipe">compilation recipe</h2>
+<pre><code>stack build --test --exec &quot;$(stack path --local-install-root)/bin/readme-lhs-test-example&quot; --exec &quot;$(stack path --local-bin)/pandoc -f markdown+lhs -i app/example.lhs -t html -o index.html --filter pandoc-include --mathjax&quot; --file-watch</code></pre>
+<p>The above <code>recipe</code>, taking advantage of stack composability, builds the project, runs the test, renders this file as html, and then watches for file changes. Pandoc and pandoc-include are assumed to be installed via stack, so you might have to:</p>
+<pre><code>stack install pandoc
+stack install pandoc-include</code></pre>
 <h2 id="template">template</h2>
-<p>The template produces a shell project that builds out-of-the-box.</p>
-<pre><code>stack new project-name readme-lhs
-cd project-name
-stack install
-readme</code></pre>
-<p>and it should chirp back a cheery &quot;ok&quot;.</p>
-<p>If you dont want to pollute the global <code>~/.local/bin</code>, you can drop back to</p>
+<p>The bare bones of this process is available as a stack template:</p>
 <pre><code>stack new project-name readme-lhs
 cd project-name
 stack build
-$(stack path --local-install-root)/bin/readme</code></pre>
-<p>The <a href="other/readme-lhs.hsfiles">template file</a> can always be edited, renamed etc and dropped into a directory, and stack will find it.</p>
-<h1 id="design-wonkery">design wonkery</h1>
-<p>Stripping away optional extras, readme-lhs tries for a minimalist design:</p>
-<ul class="incremental">
-<li>markdown for all docs. Anything outside what markdown can do is too fancy.</li>
-<li>pandoc for document conversion. <code>-f markdown+lhs</code> is a georgeous rendering of a .lhs file. I turn <a href="https://help.github.com/articles/user-organization-and-project-pages/">github pages</a> on using the User Pages site method for each project I'd like to blog, and render readme.lhs to index.html using pandoc.</li>
-<li>css for styling, but also dealing with github markdown style which is where many users will read your lhs.</li>
-<li>using lhs as a valid haskell artform</li>
-<li>readme.lhs as a general purpose executable, tester, example holder and all-round centralising communication document.</li>
-<li>a long list of the most commonly-used, and mostly-benign language flags, NoImplicitPrelude &amp; UnicodeSyntax. I call this -XHaskell2016 in private.</li>
-<li>the <a href="https://docs.haskellstack.org/en/stable/travis_ci/">stack-recommended .travis.yml</a> (the complicated one, so I can keep track of cabal issues, ghc and the last few lts versions)</li>
-<li>Embedding <a href="https://www.stackage.org/package/protolude">Protolude</a> as the replacement prelude.</li>
-</ul>
-<p>Here's what I threw out:</p>
-<ul class="incremental">
-<li>haddock. The design space of using markdown as a complete replacement is fresh territory.</li>
-<li>test directory. I looked through my test and example directories and noted the mess in many. I love to test - creating a realistic arbitrary instance is the best way to get to know your data structures - but tests and multiple examples didn't belong in the start-up phase.</li>
-<li>hakyll. For me, markdown created for a separate blogging process is better inside the actual project as readme's - my hakyll site rots pretty quickly.</li>
-<li>app directory. The boundary between what the app is and what the library is is very fluid for me, and a source of technical debt as concepts bounce between directories.</li>
-</ul>
-<p>I then keep this repo around for phase 2, where a project takes a successful shape and and needs test and app boiler-plate.</p>
-<h1 id="lhs-executable">lhs executable</h1>
-<p>I use both .lhs and .hs styles, and often need to flip between the two. In particular, hlint didn't always play nice with .lhs, and for a while I needed to flip from .lhs to .hs, run hlint, and then flip back to .lhs.</p>
-<p>lhs makes no attempt to account for haddock and will thus not be suitable for most people.</p>
-<p>To install and use lhs:</p>
-<pre><code>git clone https://github.com/tonyday567/readme-lhs
-cd readme-lhs
-stack install
-lhs --file-in readme.lhs --file-out readme.hs</code></pre>
-<h1 id="code">code</h1>
-<p><a href="https://www.stackage.org/package/protolude">protolude</a></p>
-<p><a href="https://www.stackage.org/package/hoogle">hoogle</a></p>
+$(stack path --local-install-root)/bin/readme-lhs-example</code></pre>
+<p>The <code>other/readme-lhs.hsfiles</code> can always be edited, renamed etc and dropped into a directory, and stack will find it.</p>
+<h2 id="ghc-options"><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference">ghc options</a></h2>
 <div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# OPTIONS_GHC -Wall #-}</span>
-<span class="ot">{-# OPTIONS_GHC -fno-warn-type-defaults #-}</span>
-<span class="kw">import </span><span class="dt">Protolude</span>
+<span class="ot">{-# OPTIONS_GHC -fno-warn-type-defaults #-}</span></code></pre></div>
+<h2 id="pragmas"><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/lang.html">pragmas</a></h2>
+<div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="co">-- doctest doesn&#39;t look at the cabal file, so you need pragmas here</span>
+<span class="ot">{-# LANGUAGE NoImplicitPrelude #-}</span>
+<span class="ot">{-# LANGUAGE OverloadedStrings #-}</span>
+<span class="ot">{-# LANGUAGE DataKinds #-}</span>
+<span class="ot">{-# LANGUAGE DeriveGeneric #-}</span>
+<span class="ot">{-# LANGUAGE ScopedTypeVariables #-}</span>
+<span class="ot">{-# LANGUAGE TypeOperators #-}</span>
+<span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></code></pre></div>
+<h2 id="libraries"><a href="https://www.stackage.org/">libraries</a></h2>
+<ul class="incremental">
+<li><a href="https://www.stackage.org/package/protolude">protolude</a></li>
+<li><a href="https://www.stackage.org/package/optparse-generic">optparse-generic</a></li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Protolude</span>
+<span class="kw">import </span><span class="dt">Options.Generic</span></code></pre></div>
+<h2 id="code">code</h2>
+<ul class="incremental">
+<li><a href="https://www.stackage.org/package/hoogle">hoogle</a></li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Opts</span> w <span class="fu">=</span> <span class="dt">Opts</span>
+    {<span class="ot"> number ::</span> w <span class="ot">::</span><span class="fu">:</span> <span class="dt">Maybe</span> <span class="dt">Integer</span> <span class="fu">&lt;?&gt;</span> <span class="st">&quot;The number you want to product to&quot;</span>
+    }
+    <span class="kw">deriving</span> (<span class="dt">Generic</span>)
+
+<span class="kw">instance</span> <span class="dt">ParseRecord</span> (<span class="dt">Opts</span> <span class="dt">Wrapped</span>)
 
 <span class="ot">main ::</span> <span class="dt">IO</span> ()
 main <span class="fu">=</span> <span class="kw">do</span>
-  print <span class="st">&quot;readme-lhs library&quot;</span>
-  <span class="kw">let</span> fac n <span class="fu">=</span> foldr (\x g n&#39; <span class="ot">-&gt;</span> g (x<span class="fu">*</span>n&#39;)) identity [<span class="dv">1</span><span class="fu">..</span>n] <span class="dv">1</span>
-  writeFile <span class="st">&quot;other/example.md&quot;</span> <span class="fu">$</span>
-      <span class="st">&quot;$\\prod_{x=1}^{20} x = &quot;</span> <span class="fu">&lt;&gt;</span> show (fac <span class="dv">20</span>) <span class="fu">&lt;&gt;</span> <span class="st">&quot;$\n&quot;</span></code></pre></div>
-<p>Output from the code above appears in this readme.lhs when rendered with pandoc-include (except if you're reading this as the repo readme.md, sorry):</p>
-<p><span class="math inline">\(\prod_{x=1}^{20} x = 2432902008176640000\)</span></p>
-<h1 id="colophone">colophone</h1>
-<p><a href="https://haskell-lang.org/">Haskell</a> code is managed using <a href="https://docs.haskellstack.org/en/stable/README/">stack</a> and written with <a href="spacemacs.org">spacemacs</a> using the <a href="http://commercialhaskell.github.io/intero/">intero</a> engine. <a href="https://www.stackage.org/package/protolude">Protolude</a> is our prelude of choice. Documentation is written using <a href="">markdown</a> and rendered with <a href="http://pandoc.org/">pandoc</a> and <a href="https://hackage.haskell.org/package/pandoc-include">pandoc-include</a>. Repos and all blog material is hosted via <a href="https://github.com/">github</a> and tested with <a href="https://travis-ci.org/">travis ci</a>.</p>
+<span class="ot">    o ::</span> <span class="dt">Opts</span> <span class="dt">Unwrapped</span> <span class="ot">&lt;-</span> unwrapRecord <span class="st">&quot;an example app for readme-lhs&quot;</span>
+    <span class="kw">let</span> n <span class="fu">=</span> fromMaybe <span class="dv">10</span> (number o)
+    <span class="kw">let</span> answer <span class="fu">=</span> product [<span class="dv">1</span><span class="fu">..</span>n]
+    putStrLn (show answer <span class="fu">&lt;&gt;</span> <span class="st">&quot; 👍&quot;</span><span class="ot"> ::</span> <span class="dt">Text</span>)
+    writeFile <span class="st">&quot;other/answer.md&quot;</span>
+        (<span class="st">&quot;$\\prod_{i=1}^{&quot;</span> <span class="fu">&lt;&gt;</span> show n <span class="fu">&lt;&gt;</span> <span class="st">&quot;} i = &quot;</span> <span class="fu">&lt;&gt;</span>
+         show answer <span class="fu">&lt;&gt;</span> <span class="st">&quot;$&quot;</span>)</code></pre></div>
+<h2 id="output">output</h2>
+<p><span class="math inline">\(\prod_{i=1}^{10} i = 3628800\)</span></p>
+<h2 id="tests">tests</h2>
+<p><a href="https://www.stackage.org/package/doctest">doctest</a> is a lightweight test framework that checks example code.</p>
+<div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="co">-- | doctests</span>
+<span class="co">-- &gt;&gt;&gt; let n = 10</span>
+<span class="co">-- &gt;&gt;&gt; product [1..n]</span>
+<span class="co">-- 3628800</span></code></pre></div>
+<hr />
+<div class="footer">
+<p>Powered by <a href="https://haskell-lang.org/">haskell</a>, <a href="https://docs.haskellstack.org/en/stable/README/">stack</a> and <a href="http://pandoc.org/">pandoc</a>.</p>
+</div>
