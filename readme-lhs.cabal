@@ -1,11 +1,9 @@
-name:
-  readme-lhs
-version:
-  0.1.0
+name: readme-lhs
+version: 0.1.1
 synopsis:
-  See readme.lhs
+  See readme.md
 description:
-  See readme.lhs
+  See readme.md for description.
 homepage:
   https://github.com/tonyday567/readme-lhs
 license:
@@ -29,9 +27,9 @@ extra-source-files:
   index.html
   stack.yaml
   other/lhs.css
+  other/footer.md
   other/header.md
   other/readme-lhs.hsfiles
-
 executable readme-lhs-example
   default-language:
     Haskell2010
@@ -96,10 +94,6 @@ test-suite test
   build-depends:
     base >= 4.7 && < 5,
     tasty,
-    HUnit,
-    tasty-hunit,
-    QuickCheck,
-    tasty-quickcheck,
     doctest,
     protolude
   default-extensions:

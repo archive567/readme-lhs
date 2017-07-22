@@ -6,10 +6,12 @@ other/header.md
 The language in which we express our ideas has a strong influence on our thought processes. ~ Knuth
 </blockquote>
 
-readme-lhs
+[readme-lhs](https://tonyday567.github.io/readme-lhs)
 ===
 
-[Readme-lhs](https://github.com/tonyday567/readme-lhs) is an example of mixing [markdown](https://daringfireball.net/projects/markdown/syntax) and haskell code in literate style, aiming for rapid development from initial idea to rendered description. The project:
+[repo](https://github.com/tonyday567/readme-lhs)
+
+[`readme-lhs`](https://github.com/tonyday567/readme-lhs) is an example of mixing [markdown](https://daringfireball.net/projects/markdown/syntax) and haskell code in literate style, aiming for rapid development from initial idea to rendered description. The project:
 
 - aims for a minimal but complete startup phase for a haskell project.
 - Targets [pandoc](http://pandoc.org/) for document conversion. `-f markdown+lhs` is a georgeous rendering of a .lhs file.
@@ -51,7 +53,6 @@ The `other/readme-lhs.hsfiles` can always be edited, renamed etc and dropped int
 
 \begin{code}
 {-# OPTIONS_GHC -Wall #-}
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
 \end{code}
 
 [pragmas](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/lang.html)
@@ -122,8 +123,6 @@ tests
 -- 3628800
 \end{code}
 
-***
-
-<div class="footer">
-Powered by [haskell](https://haskell-lang.org/), [stack](https://docs.haskellstack.org/en/stable/README/) and [pandoc](http://pandoc.org/).
-</div>
+```include
+other/footer.md
+```

@@ -5,8 +5,9 @@
 <blockquote cite>
 The language in which we express our ideas has a strong influence on our thought processes. ~ Knuth
 </blockquote>
-<h1 id="readme-lhs">readme-lhs</h1>
-<p><a href="https://github.com/tonyday567/readme-lhs">Readme-lhs</a> is an example of mixing <a href="https://daringfireball.net/projects/markdown/syntax">markdown</a> and haskell code in literate style, aiming for rapid development from initial idea to rendered description. The project:</p>
+<h1 id="readme-lhs"><a href="https://tonyday567.github.io/readme-lhs">readme-lhs</a></h1>
+<p><a href="https://github.com/tonyday567/readme-lhs">repo</a></p>
+<p><a href="https://github.com/tonyday567/readme-lhs"><code>readme-lhs</code></a> is an example of mixing <a href="https://daringfireball.net/projects/markdown/syntax">markdown</a> and haskell code in literate style, aiming for rapid development from initial idea to rendered description. The project:</p>
 <ul class="incremental">
 <li>aims for a minimal but complete startup phase for a haskell project.</li>
 <li>Targets <a href="http://pandoc.org/">pandoc</a> for document conversion. <code>-f markdown+lhs</code> is a georgeous rendering of a .lhs file.</li>
@@ -27,8 +28,7 @@ stack build
 $(stack path --local-install-root)/bin/readme-lhs-example</code></pre>
 <p>The <code>other/readme-lhs.hsfiles</code> can always be edited, renamed etc and dropped into a directory, and stack will find it.</p>
 <h2 id="ghc-options"><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference">ghc options</a></h2>
-<div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# OPTIONS_GHC -Wall #-}</span>
-<span class="ot">{-# OPTIONS_GHC -fno-warn-type-defaults #-}</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# OPTIONS_GHC -Wall #-}</span></code></pre></div>
 <h2 id="pragmas"><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/lang.html">pragmas</a></h2>
 <div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="co">-- doctest doesn&#39;t look at the cabal file, so you need pragmas here</span>
 <span class="ot">{-# LANGUAGE NoImplicitPrelude #-}</span>
@@ -61,7 +61,7 @@ main <span class="fu">=</span> <span class="kw">do</span>
 <span class="ot">    o ::</span> <span class="dt">Opts</span> <span class="dt">Unwrapped</span> <span class="ot">&lt;-</span> unwrapRecord <span class="st">&quot;an example app for readme-lhs&quot;</span>
     <span class="kw">let</span> n <span class="fu">=</span> fromMaybe <span class="dv">10</span> (number o)
     <span class="kw">let</span> answer <span class="fu">=</span> product [<span class="dv">1</span><span class="fu">..</span>n]
-    putStrLn (show answer <span class="fu">&lt;&gt;</span> <span class="st">&quot; 👍&quot;</span><span class="ot"> ::</span> <span class="dt">Text</span>)
+    putStrLn (show answer <span class="fu">&lt;&gt;</span> <span class="st">&quot; 👍&quot;</span><span class="ot">::</span> <span class="dt">Text</span>)
     writeFile <span class="st">&quot;other/answer.md&quot;</span>
         (<span class="st">&quot;$\\prod_{i=1}^{&quot;</span> <span class="fu">&lt;&gt;</span> show n <span class="fu">&lt;&gt;</span> <span class="st">&quot;} i = &quot;</span> <span class="fu">&lt;&gt;</span>
          show answer <span class="fu">&lt;&gt;</span> <span class="st">&quot;$&quot;</span>)</code></pre></div>
