@@ -1,7 +1,3 @@
-```include
-other/header.md
-```
-
 <blockquote cite>
 The language in which we express our ideas has a strong influence on our thought processes. ~ Knuth
 </blockquote>
@@ -18,35 +14,38 @@ The language in which we express our ideas has a strong influence on our thought
 - utilises stack for a tight compilation loop, from initial code to rendered html, including computational results (via [pandoc-include](https://hackage.haskell.org/package/pandoc-include)).
 - Targets [github pages](https://help.github.com/articles/user-organization-and-project-pages/) for immediate publication on `git push`.
 
-The `app/example.lhs` is then a one-stop shop for links, ideas, app, tester and example holder.
+The `example/example.lhs` is then a one-stop shop for links, ideas, app, tester and example holder.
 
 compilation recipe
 ---
 
-~~~
-stack build --test --exec "$(stack path --local-install-root)/bin/readme-lhs-test-example" --exec "$(stack path --local-bin)/pandoc -f markdown+lhs -i app/example.lhs -t html -o index.html --filter pandoc-include --mathjax" --file-watch
-~~~
+```
+stack build --test --exec "$(stack path --local-install-root)/bin/readme-lhs-example" --exec "$(stack path --local-bin)/pandoc -f markdown+lhs -i other/header.md example/example.lhs other/footer.md -t html -o index.html --filter pandoc-include --mathjax" --file-watch
+```
 
 The above `recipe`, taking advantage of stack composability, builds the project, runs the test, renders this file as html, and then watches for file changes.  Pandoc and pandoc-include are assumed to be installed via stack, so you might have to:
 
-~~~
+```
 stack install pandoc
 stack install pandoc-include
-~~~
+```
 
 template
 ---
 
 The bare bones of this process is available as a stack template:
 
-~~~
+```
 stack new project-name readme-lhs
 cd project-name
 stack build
 $(stack path --local-install-root)/bin/readme-lhs-example
-~~~
+```
 
 The `other/readme-lhs.hsfiles` can always be edited, renamed etc and dropped into a directory, and stack will find it.
+
+lhs format, and mixing lhs and md, can get tiresome, so there is also the `other/readme-hs.hsfiles` template, which splits the example.lhs into example.hs and example.md.
+
 
 [ghc options](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference)
 ---
@@ -122,7 +121,3 @@ tests
 -- >>> product [1..n]
 -- 3628800
 \end{code}
-
-```include
-other/footer.md
-```

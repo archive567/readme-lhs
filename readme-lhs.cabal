@@ -26,10 +26,8 @@ extra-source-files:
   readme.md
   index.html
   stack.yaml
-  other/lhs.css
-  other/footer.md
-  other/header.md
   other/readme-lhs.hsfiles
+  other/readme-hs.hsfiles
 executable readme-lhs-example
   default-language:
     Haskell2010
@@ -40,7 +38,7 @@ executable readme-lhs-example
     -rtsopts
     -with-rtsopts=-N
   hs-source-dirs:
-    app
+    example
   main-is:
     example.lhs
   build-depends:

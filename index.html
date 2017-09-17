@@ -14,9 +14,9 @@ The language in which we express our ideas has a strong influence on our thought
 <li>utilises stack for a tight compilation loop, from initial code to rendered html, including computational results (via <a href="https://hackage.haskell.org/package/pandoc-include">pandoc-include</a>).</li>
 <li>Targets <a href="https://help.github.com/articles/user-organization-and-project-pages/">github pages</a> for immediate publication on <code>git push</code>.</li>
 </ul>
-<p>The <code>app/example.lhs</code> is then a one-stop shop for links, ideas, app, tester and example holder.</p>
+<p>The <code>example/example.lhs</code> is then a one-stop shop for links, ideas, app, tester and example holder.</p>
 <h2 id="compilation-recipe">compilation recipe</h2>
-<pre><code>stack build --test --exec &quot;$(stack path --local-install-root)/bin/readme-lhs-test-example&quot; --exec &quot;$(stack path --local-bin)/pandoc -f markdown+lhs -i app/example.lhs -t html -o index.html --filter pandoc-include --mathjax&quot; --file-watch</code></pre>
+<pre><code>stack build --test --exec &quot;$(stack path --local-install-root)/bin/readme-lhs-example&quot; --exec &quot;$(stack path --local-bin)/pandoc -f markdown+lhs -i other/header.md example/example.lhs other/footer.md -t html -o index.html --filter pandoc-include --mathjax&quot; --file-watch</code></pre>
 <p>The above <code>recipe</code>, taking advantage of stack composability, builds the project, runs the test, renders this file as html, and then watches for file changes. Pandoc and pandoc-include are assumed to be installed via stack, so you might have to:</p>
 <pre><code>stack install pandoc
 stack install pandoc-include</code></pre>
@@ -27,6 +27,7 @@ cd project-name
 stack build
 $(stack path --local-install-root)/bin/readme-lhs-example</code></pre>
 <p>The <code>other/readme-lhs.hsfiles</code> can always be edited, renamed etc and dropped into a directory, and stack will find it.</p>
+<p>lhs format, and mixing lhs and md, can get tiresome, so there is also the <code>other/readme-hs.hsfiles</code> template, which splits the example.lhs into example.hs and example.md.</p>
 <h2 id="ghc-options"><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference">ghc options</a></h2>
 <div class="sourceCode"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# OPTIONS_GHC -Wall #-}</span></code></pre></div>
 <h2 id="pragmas"><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/lang.html">pragmas</a></h2>
@@ -61,7 +62,7 @@ main <span class="fu">=</span> <span class="kw">do</span>
 <span class="ot">    o ::</span> <span class="dt">Opts</span> <span class="dt">Unwrapped</span> <span class="ot">&lt;-</span> unwrapRecord <span class="st">&quot;an example app for readme-lhs&quot;</span>
     <span class="kw">let</span> n <span class="fu">=</span> fromMaybe <span class="dv">10</span> (number o)
     <span class="kw">let</span> answer <span class="fu">=</span> product [<span class="dv">1</span><span class="fu">..</span>n]
-    putStrLn (show answer <span class="fu">&lt;&gt;</span> <span class="st">&quot; 👍&quot;</span><span class="ot">::</span> <span class="dt">Text</span>)
+    putStrLn (show answer <span class="fu">&lt;&gt;</span> <span class="st">&quot; 👍&quot;</span><span class="ot"> ::</span> <span class="dt">Text</span>)
     writeFile <span class="st">&quot;other/answer.md&quot;</span>
         (<span class="st">&quot;$\\prod_{i=1}^{&quot;</span> <span class="fu">&lt;&gt;</span> show n <span class="fu">&lt;&gt;</span> <span class="st">&quot;} i = &quot;</span> <span class="fu">&lt;&gt;</span>
          show answer <span class="fu">&lt;&gt;</span> <span class="st">&quot;$&quot;</span>)</code></pre></div>
@@ -75,5 +76,5 @@ main <span class="fu">=</span> <span class="kw">do</span>
 <span class="co">-- 3628800</span></code></pre></div>
 <hr />
 <div class="footer">
-<p>Powered by <a href="https://haskell-lang.org/">haskell</a>, <a href="https://docs.haskellstack.org/en/stable/README/">stack</a> and <a href="http://pandoc.org/">pandoc</a>.</p>
+<p>Made with love 'n' care; and <a href="https://haskell-lang.org/">haskell</a>, <a href="https://pandoc.org">pandoc</a>, and <a href="https://docs.haskellstack.org/en/stable/README/">stack</a>.</p>
 </div>
