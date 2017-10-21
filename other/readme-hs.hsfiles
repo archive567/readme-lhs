@@ -1,4 +1,4 @@
-{-# START_FILE example/example.md #-}
+{-# START_FILE app/example.md #-}
 {{name}}
 ===
 
@@ -15,7 +15,7 @@ recipe
 ---
 
 ```
-stack build --test --exec "$(stack path --local-install-root)/bin/{{name}}-example" --exec "$(stack path --local-bin)/pandoc -f markdown -i other/header.md example/example.md other/footer.md -t html -o index.html --filter pandoc-include --mathjax" --exec "$(stack path --local-bin)/pandoc -f markdown -i example/example.md -t markdown -o readme.md --filter pandoc-include --mathjax" --file-watch
+stack build --test --exec "$(stack path --local-install-root)/bin/{{name}}-example" --exec "$(stack path --local-bin)/pandoc -f markdown -i other/header.md app/example.md other/footer.md -t html -o index.html --filter pandoc-include --mathjax" --exec "$(stack path --local-bin)/pandoc -f markdown -i app/example.md -t markdown -o readme.md --filter pandoc-include --mathjax" --file-watch
 ```
 
 reference
@@ -29,7 +29,7 @@ reference
 - [hoogle](https://www.stackage.org/package/hoogle)
 - [doctest](https://www.stackage.org/package/doctest)
 
-{-# START_FILE example/example.hs #-}
+{-# START_FILE app/example.hs #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DataKinds #-}
@@ -63,185 +63,81 @@ main = do
 -- >>> product [1..n]
 -- 3628800
 
-{-# START_FILE {{name}}.cabal #-}
+{-# START_FILE package.yaml #-}
 name: {{name}}
-version: 0.0.1
-synopsis:
-  See readme.md
-description:
-  See readme.md for description.
-category:
-  project
-homepage:
-  https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}
-license:
-  BSD3
-license-file:
-  LICENSE
-author:
-  {{author-name}}{{^author-name}}Author name here{{/author-name}}
-maintainer:
-  {{author-email}}{{^author-email}}example@example.com{{/author-email}}
-copyright:
-  {{copyright}}{{^copyright}}{{year}}{{^year}}2017{{/year}} {{authorName}}{{^authorName}}Author name here{{/authorName}}{{/copyright}}
-build-type:
-  Simple
-cabal-version:
-  >=1.14
+version: '0.0.1'
+synopsis: See readme.md
+description: See readme.md for description.
+category: project
+author: {{author-name}}{{^author-name}}Author name here{{/author-name}}
+maintainer: tonyday567@gmail.com
+copyright: {{copyright}}{{^copyright}}{{year}}{{^year}}2017{{/year}} {{authorName}}{{^authorName}}Author name here{{/authorName}}{{/copyright}}
+license: BSD3
+github: {{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}
 extra-source-files:
-  stack.yaml
-library
-  default-language:
-    Haskell2010
-  ghc-options:
-  hs-source-dirs:      
-
-  exposed-modules:
-
-  build-depends:
-    base >= 4.7 && < 5
-  default-extensions:
-    NoImplicitPrelude,
-    UnicodeSyntax,
-    BangPatterns,
-    BinaryLiterals,
-    DeriveFoldable,
-    DeriveFunctor,
-    DeriveGeneric,
-    DeriveTraversable,
-    DisambiguateRecordFields,
-    EmptyCase,
-    FlexibleContexts,
-    FlexibleInstances,
-    FunctionalDependencies,
-    GADTSyntax,
-    InstanceSigs,
-    KindSignatures,
-    LambdaCase,
-    MonadComprehensions,
-    MultiParamTypeClasses,
-    MultiWayIf,
-    NegativeLiterals,
-    OverloadedStrings,
-    ParallelListComp,
-    PartialTypeSignatures,
-    PatternSynonyms,
-    RankNTypes,
-    RecordWildCards,
-    RecursiveDo,
-    ScopedTypeVariables,
-    TupleSections,
-    TypeFamilies,
-    TypeOperators
-
-executable {{name}}-example
-  default-language:
-    Haskell2010
-  ghc-options:
-    -funbox-strict-fields
-    -fforce-recomp
-    -threaded
-    -rtsopts
-    -with-rtsopts=-N
-  hs-source-dirs:
-    example
-  main-is:
-    example.hs
-  build-depends:
-    base >= 4.7 && < 5,
-    protolude,
-    optparse-generic
-  default-extensions:
-    NoImplicitPrelude,
-    UnicodeSyntax,
-    BangPatterns,
-    BinaryLiterals,
-    DeriveFoldable,
-    DeriveFunctor,
-    DeriveGeneric,
-    DeriveTraversable,
-    DisambiguateRecordFields,
-    EmptyCase,
-    FlexibleContexts,
-    FlexibleInstances,
-    FunctionalDependencies,
-    GADTSyntax,
-    InstanceSigs,
-    KindSignatures,
-    LambdaCase,
-    MonadComprehensions,
-    MultiParamTypeClasses,
-    MultiWayIf,
-    NegativeLiterals,
-    OverloadedStrings,
-    ParallelListComp,
-    PartialTypeSignatures,
-    PatternSynonyms,
-    RankNTypes,
-    RecordWildCards,
-    RecursiveDo,
-    ScopedTypeVariables,
-    TupleSections,
-    TypeFamilies,
-    TypeOperators
-
-test-suite test
-  default-language:
-    Haskell2010
-  type:
-    exitcode-stdio-1.0
-  hs-source-dirs:
-    test
-  main-is:
-    test.hs
-  build-depends:
-    base >= 4.7 && < 5,
-    tasty,
-    HUnit,
-    tasty-hunit,
-    QuickCheck,
-    tasty-quickcheck,
-    doctest,
-    protolude
-  default-extensions:
-    NoImplicitPrelude,
-    UnicodeSyntax,
-    BangPatterns,
-    BinaryLiterals,
-    DeriveFoldable,
-    DeriveFunctor,
-    DeriveGeneric,
-    DeriveTraversable,
-    DisambiguateRecordFields,
-    EmptyCase,
-    FlexibleContexts,
-    FlexibleInstances,
-    FunctionalDependencies,
-    GADTSyntax,
-    InstanceSigs,
-    KindSignatures,
-    LambdaCase,
-    MonadComprehensions,
-    MultiParamTypeClasses,
-    MultiWayIf,
-    NegativeLiterals,
-    OverloadedStrings,
-    ParallelListComp,
-    PartialTypeSignatures,
-    PatternSynonyms,
-    RankNTypes,
-    RecordWildCards,
-    RecursiveDo,
-    ScopedTypeVariables,
-    TupleSections,
-    TypeFamilies,
-    TypeOperators
-
-source-repository head
-  type:
-    git
-  location:
-    https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}
+- other/lhs.css
+- other/header.md
+- other/footer.md
+default-extensions:
+- BangPatterns
+- BinaryLiterals
+- DeriveFoldable
+- DeriveFunctor
+- DeriveGeneric
+- DeriveTraversable
+- DisambiguateRecordFields
+- EmptyCase
+- FlexibleContexts
+- FlexibleInstances
+- FunctionalDependencies
+- GADTSyntax
+- InstanceSigs
+- KindSignatures
+- LambdaCase
+- MonadComprehensions
+- MultiParamTypeClasses
+- MultiWayIf
+- NegativeLiterals
+- NoImplicitPrelude
+- OverloadedStrings
+- ParallelListComp
+- PartialTypeSignatures
+- PatternSynonyms
+- RankNTypes
+- RecordWildCards
+- RecursiveDo
+- ScopedTypeVariables
+- TupleSections
+- TypeFamilies
+- TypeOperators
+- UnicodeSyntax
+dependencies:
+- base >=4.7 && <5
+executables:
+  {{name}}-example:
+    main: example.hs
+    source-dirs: app
+    ghc-options:
+    - -funbox-strict-fields
+    - -fforce-recomp
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - protolude
+    - optparse-generic
+tests:
+  test:
+    main: test.hs
+    source-dirs: test
+    dependencies:
+    - HUnit
+    - QuickCheck
+    - doctest
+    - protolude
+    - tasty
+    - tasty-hunit
+    - tasty-quickcheck
 
 {-# START_FILE .gitignore #-}
 /.stack-work/
@@ -472,7 +368,7 @@ import Test.DocTest
 
 main :: IO ()
 main = do
-    doctest ["example/example.hs"]
+    doctest ["app/example.hs"]
     defaultMain tests
 
 tests :: TestTree
