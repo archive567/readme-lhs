@@ -1,9 +1,47 @@
 [readme-lhs](https://tonyday567.github.io/readme-lhs/index.html) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.svg)](https://travis-ci.org/tonyday567/readme-lhs)
 ===
 
-See https://tonyday567.github.io/readme-lhs/index.html for project description.
+A literate programming friendly; tight work-flow stack template.
 
-compilation recipe
+other/readme-lhs.hsfiles
+---
+
+```
+stack new project-name readme-lhs
+cd project-name
+stack build
+$(stack path --local-install-root)/bin/readme-lhs-example
+
+```
+
+Which should produce:
+
+```
+Examples: 2  Tried: 2  Errors: 0  Failures: 0
+
+All 0 tests passed (0.00s)
+
+3628800 👍
+```
+
+Or grab some of the other templates from this repo:
+
+other/readme-hs
+---
+
+like the lhs version, but hs based
+
+other/batteries
+---
+
+my latest template - includes:
+
+- some tweaks to protolude
+- lens and a few other common libraries
+- generic-lens-labels
+- opinionated guidance
+
+dev recipe
 ---
 
 ```
@@ -15,26 +53,4 @@ The above `recipe` builds the project, runs the test, renders this file as html,
 ```
 stack install pandoc
 stack install pandoc-include
-```
-
-template
----
-
-The bare bones of this process is available as a stack template:
-
-```
-cd project-name
-stack build
-$(stack path --local-install-root)/bin/readme-lhs-example
-stack new project-name readme-lhs
-```
-
-Which should produce:
-
-```
-Examples: 2  Tried: 2  Errors: 0  Failures: 0
-
-All 0 tests passed (0.00s)
-
-3628800 👍
 ```
