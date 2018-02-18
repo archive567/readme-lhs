@@ -1,51 +1,5 @@
-<blockquote cite>
-The language in which we express our ideas has a strong influence on our thought processes. ~ Knuth
-</blockquote>
-
-[readme-lhs](https://tonyday567.github.io/readme-lhs)
+code
 ===
-
-[repo](https://github.com/tonyday567/readme-lhs)
-
-[`readme-lhs`](https://github.com/tonyday567/readme-lhs) is an example of mixing [markdown](https://daringfireball.net/projects/markdown/syntax) and haskell code in literate style, aiming for rapid development from initial idea to rendered description. The project:
-
-- aims for a minimal but complete startup phase for a haskell project.
-- Targets [pandoc](http://pandoc.org/) for document conversion. `-f markdown+lhs` is a georgeous rendering of a .lhs file.
-- utilises stack for a tight compilation loop, from initial code to rendered html, including computational results (via [pandoc-include](https://hackage.haskell.org/package/pandoc-include)).
-- Targets [github pages](https://help.github.com/articles/user-organization-and-project-pages/) for immediate publication on `git push`.
-
-The `example/example.lhs` is then a one-stop shop for links, ideas, app, tester and example holder.
-
-compilation recipe
----
-
-```
-stack build --test --exec "$(stack path --local-install-root)/bin/readme-lhs-example" --exec "$(stack path --local-bin)/pandoc -f markdown+lhs -i other/header.md example/example.lhs other/footer.md -t html -o index.html --filter pandoc-include --mathjax" --file-watch
-```
-
-The above `recipe`, taking advantage of stack composability, builds the project, runs the test, renders this file as html, and then watches for file changes.  Pandoc and pandoc-include are assumed to be installed via stack, so you might have to:
-
-```
-stack install pandoc
-stack install pandoc-include
-```
-
-template
----
-
-The bare bones of this process is available as a stack template:
-
-```
-stack new project-name readme-lhs
-cd project-name
-stack build
-$(stack path --local-install-root)/bin/readme-lhs-example
-```
-
-The `other/readme-lhs.hsfiles` can always be edited, renamed etc and dropped into a directory, and stack will find it.
-
-lhs format, and mixing lhs and md, can get tiresome, so there is also the `other/readme-hs.hsfiles` template, which splits the example.lhs into example.hs and example.md.
-
 
 [ghc options](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference)
 ---
@@ -86,21 +40,20 @@ code
 
 \begin{code}
 data Opts w = Opts
-    { number :: w ::: Maybe Integer <?> "The number you want to product to"
-    }
-    deriving (Generic)
+  { number :: w ::: Maybe Integer <?> "The number you want to product to"
+  } deriving (Generic)
 
 instance ParseRecord (Opts Wrapped)
 
 main :: IO ()
 main = do
-    o :: Opts Unwrapped <- unwrapRecord "an example app for readme-lhs"
-    let n = fromMaybe 10 (number o)
-    let answer = product [1..n]
-    putStrLn (show answer <> " 👍" :: Text)
-    writeFile "other/answer.md"
-        ("$\\prod_{i=1}^{" <> show n <> "} i = " <>
-         show answer <> "$")
+  o :: Opts Unwrapped <- unwrapRecord "an example app for readme-lhs"
+  let n = fromMaybe 10 (number o)
+  let answer = product [1..n]
+  putStrLn (show answer <> " 👍" :: Text)
+  writeFile "other/answer.md"
+    ("$\\prod_{i=1}^{" <> show n <> "} i = " <>
+     show answer <> "$")
 \end{code}
 
 output
@@ -113,7 +66,7 @@ other/answer.md
 tests
 ---
 
-[doctest](https://www.stackage.org/package/doctest) is a lightweight test framework that checks example code.
+[doctest](https://www.stackage.org/package/doctest)
 
 \begin{code}
 -- | doctests

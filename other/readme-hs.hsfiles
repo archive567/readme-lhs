@@ -15,7 +15,7 @@ recipe
 ---
 
 ```
-stack build --test --exec "$(stack path --local-install-root)/bin/{{name}}-example" --exec "$(stack path --local-bin)/pandoc -f markdown -i other/header.md app/example.md other/footer.md -t html -o index.html --filter pandoc-include --mathjax" --exec "$(stack path --local-bin)/pandoc -f markdown -i app/example.md -t markdown -o readme.md --filter pandoc-include --mathjax" --file-watch
+stack build --test --exec "$(stack path --local-install-root)/bin/{{name}}" --exec "$(stack path --local-bin)/pandoc -f markdown -i other/header.md app/example.md other/footer.md -t html -o index.html --filter pandoc-include --mathjax" --exec "$(stack path --local-bin)/pandoc -f markdown -i app/example.md -t markdown -o readme.md --filter pandoc-include --mathjax" --file-watch
 ```
 
 reference
@@ -75,69 +75,34 @@ copyright: {{copyright}}{{^copyright}}{{year}}{{^year}}2017{{/year}} {{authorNam
 license: BSD3
 github: {{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}
 extra-source-files:
-- other/lhs.css
-- other/header.md
-- other/footer.md
+  - stack.yaml
 default-extensions:
-- BangPatterns
-- BinaryLiterals
-- DeriveFoldable
-- DeriveFunctor
-- DeriveGeneric
-- DeriveTraversable
-- DisambiguateRecordFields
-- EmptyCase
-- FlexibleContexts
-- FlexibleInstances
-- FunctionalDependencies
-- GADTSyntax
-- InstanceSigs
-- KindSignatures
-- LambdaCase
-- MonadComprehensions
-- MultiParamTypeClasses
-- MultiWayIf
-- NegativeLiterals
-- NoImplicitPrelude
-- OverloadedStrings
-- ParallelListComp
-- PartialTypeSignatures
-- PatternSynonyms
-- RankNTypes
-- RecordWildCards
-- RecursiveDo
-- ScopedTypeVariables
-- TupleSections
-- TypeFamilies
-- TypeOperators
-- UnicodeSyntax
+  - NegativeLiterals
+  - NoImplicitPrelude
+  - OverloadedStrings
+  - UnicodeSyntax
 dependencies:
 - base >=4.7 && <5
 executables:
-  {{name}}-example:
+  {{name}}:
     main: example.hs
     source-dirs: app
     ghc-options:
-    - -funbox-strict-fields
-    - -fforce-recomp
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+      - -funbox-strict-fields
+      - -fforce-recomp
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
     dependencies:
-    - protolude
-    - optparse-generic
+      - protolude
+      - optparse-generic
 tests:
   test:
     main: test.hs
     source-dirs: test
     dependencies:
-    - HUnit
-    - QuickCheck
     - doctest
     - protolude
-    - tasty
-    - tasty-hunit
-    - tasty-quickcheck
 
 {-# START_FILE .gitignore #-}
 /.stack-work/
@@ -363,16 +328,8 @@ Powered by [haskell](https://haskell-lang.org/), [stack](https://docs.haskellsta
 module Main where
 
 import Protolude
-import Test.Tasty (TestTree, testGroup, defaultMain)
 import Test.DocTest
 
 main :: IO ()
 main = do
-    doctest ["app/example.hs"]
-    defaultMain tests
-
-tests :: TestTree
-tests =
-    testGroup ""
-    [
-    ]
+  doctest ["app/example.hs"]

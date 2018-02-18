@@ -1,7 +1,11 @@
 [readme-lhs](https://tonyday567.github.io/readme-lhs/index.html) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.svg)](https://travis-ci.org/tonyday567/readme-lhs)
 ===
 
-A literate programming friendly; tight work-flow stack template.
+<blockquote cite>
+The language in which we express our ideas has a strong influence on our thought processes. ~ Knuth
+</blockquote>
+
+A literate-programming friendly; tight work-flow stack template.
 
 other/readme-lhs.hsfiles
 ---
@@ -11,46 +15,31 @@ stack new project-name readme-lhs
 cd project-name
 stack build
 $(stack path --local-install-root)/bin/readme-lhs-example
-
+$(stack path --local-bin)/pandoc -f markdown -i other/header.md readme.md example/example.lhs other/footer.md -t html -o index.html --filter pandoc-include --mathjax
 ```
 
-Which should produce:
+Which:
 
-```
-Examples: 2  Tried: 2  Errors: 0  Failures: 0
+- runs an executable, which places some output in a markdown file
+- gathers together the readme.md and the example.lhs into an index.html
 
-All 0 tests passed (0.00s)
-
-3628800 👍
-```
+alternative templates
+===
 
 Or grab some of the other templates from this repo:
 
-other/readme-hs
+other/readme-hs.hsfiles
 ---
 
 like the lhs version, but hs based
 
-other/batteries
+other/batteries.hsfiles
 ---
 
-my latest template - includes:
+This is my latest working template, overly influenced by [lexi-lambda's opinionated guide](https://lexi-lambda.github.io/blog/2018/02/10/an-opinionated-guide-to-haskell-in-2018/). The template includes:
 
-- some tweaks to protolude
-- lens and a few other common libraries
+- some minor tweaks to protolude
+- lens, foldl, formatting & text as must have libraries
 - generic-lens-labels
-- opinionated guidance
 
-dev recipe
----
 
-```
-stack build --test --exec "$(stack path --local-install-root)/bin/readme-lhs-test-example" --exec "$(stack path --local-bin)/pandoc -f markdown+lhs -i other/header.md example/example.lhs other/footer.md -t html -o index.html --filter pandoc-include --mathjax" --file-watch
-```
-
-The above `recipe` builds the project, runs the test, renders this file as html, and then watches for file changes.  Pandoc and pandoc-include are assumed to be installed via stack, so you might have to:
-
-```
-stack install pandoc
-stack install pandoc-include
-```
