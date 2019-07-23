@@ -25,14 +25,14 @@ using Readme.Lhs. The file is composed of several elements:
 [ghc options](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference)
 --------------------------------------------------------------------------------------------------------
 
-``` {.sourceCode .literate .haskell}
+```haskell
 {-# OPTIONS_GHC -Wall #-}
 ```
 
 [pragmas](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/lang.html)
 ------------------------------------------------------------------------------------
 
-``` {.sourceCode .literate .haskell}
+```haskell
 -- doctest doesn't look at the cabal file, so you need pragmas here
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -48,7 +48,7 @@ using Readme.Lhs. The file is composed of several elements:
 -   [protolude](https://www.hackage.org/package/protolude)
 -   [readme-lhs](https://www.hackage.org/package/readme-lhs)
 
-``` {.sourceCode .literate .haskell}
+```haskell
 import Protolude
 import Readme.Lhs
 ```
@@ -58,7 +58,7 @@ code
 
 -   [hoogle](https://www.stackage.org/package/hoogle)
 
-``` {.sourceCode .literate .haskell}
+```haskell
 main :: IO ()
 main = do
   let n = 10
@@ -72,7 +72,7 @@ main = do
 Simple example of an output
 ```
 
-``` {.sourceCode .literate .haskell}
+```haskell
     output "example2" (show answer)
 ```
 
@@ -82,7 +82,7 @@ Simple example of an output
 3628800
 ```
 
-``` {.sourceCode .literate .haskell}
+```haskell
     pure blocks
   pure ()
 ```

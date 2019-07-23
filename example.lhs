@@ -12,11 +12,11 @@ The language in which we express our ideas has a strong influence on our thought
 This is an example of mixing literate haskell with markdown, and in using Readme.Lhs.  The file is composed of several elements:
 
 - literate haskell. Bird-tracks are used, as the alternative method is latex rather than markdown, which doesn't survive a pandoc round trip.
-- markdown. All non bird-tracked lines are considered to be markdown.  It's probably incompatible with haddock, but this may well resolve with adoption of the recent literate markdown [ghc proposal](https://gitlab.haskell.org/ghc/ghc/wikis/literate-markdown).
+- markdown. All non bird-tracked lines are considered to be markdown.  It's probably incompatible with haddock, but this may well resolve with adoption of the [literate markdown ghc proposal](https://gitlab.haskell.org/ghc/ghc/wikis/literate-markdown).
 - fenced code blocks with an output class, which are used to insert computation results. The fenced code blocks look like:
 
-    ```{.output .example}
-    ```
+    \`\`\`{.output .example}
+    \`\`\`
 
 [ghc options](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference)
 ---
