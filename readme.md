@@ -25,18 +25,22 @@ using Readme.Lhs. The file is composed of several elements:
 [ghc options](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference)
 --------------------------------------------------------------------------------------------------------
 
-> {-# OPTIONS_GHC -Wall #-}
+``` {.sourceCode .literate .haskell}
+{-# OPTIONS_GHC -Wall #-}
+```
 
 [pragmas](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/lang.html)
 ------------------------------------------------------------------------------------
 
-> -- doctest doesn't look at the cabal file, so you need pragmas here
-> {-# LANGUAGE NoImplicitPrelude #-}
-> {-# LANGUAGE OverloadedStrings #-}
-> {-# LANGUAGE DataKinds #-}
-> {-# LANGUAGE ScopedTypeVariables #-}
-> {-# LANGUAGE TypeOperators #-}
-> {-# LANGUAGE FlexibleInstances #-}
+``` {.sourceCode .literate .haskell}
+-- doctest doesn't look at the cabal file, so you need pragmas here
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE FlexibleInstances #-}
+```
 
 [libraries](https://www.stackage.org/)
 --------------------------------------
@@ -44,27 +48,33 @@ using Readme.Lhs. The file is composed of several elements:
 -   [protolude](https://www.hackage.org/package/protolude)
 -   [readme-lhs](https://www.hackage.org/package/readme-lhs)
 
-> import Protolude
-> import Readme.Lhs
+``` {.sourceCode .literate .haskell}
+import Protolude
+import Readme.Lhs
+```
 
 code
 ----
 
 -   [hoogle](https://www.stackage.org/package/hoogle)
 
-> main :: IO ()
-> main = do
->   let n = 10
->   let answer = product [1..n::Integer]
->   blocks <- readMarkdownBlocks "example.lhs"
->   _ <- runOutput "readme.md" $ do
->     output "example1" "Simple example of an output"
+``` {.sourceCode .literate .haskell}
+main :: IO ()
+main = do
+  let n = 10
+  let answer = product [1..n::Integer]
+  blocks <- readMarkdownBlocks "example.lhs"
+  _ <- runOutput "readme.md" $ do
+    output "example1" "Simple example of an output"
+```
 
 ``` {.output .example1}
 Simple example of an output
 ```
 
->     output "example2" (show answer)
+``` {.sourceCode .literate .haskell}
+    output "example2" (show answer)
+```
 
 10! is equal to:
 
@@ -72,8 +82,10 @@ Simple example of an output
 3628800
 ```
 
->     pure blocks
->   pure ()
+``` {.sourceCode .literate .haskell}
+    pure blocks
+  pure ()
+```
 
 Output that doesn't exist is simply cleared.
 
