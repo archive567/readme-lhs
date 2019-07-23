@@ -40,23 +40,39 @@ data Flavour = GitHubMarkdown | LHS
 
 exts :: Flavour -> Extensions
 exts LHS = enableExtension Ext_literate_haskell $ getDefaultExtensions "markdown"
-exts GitHubMarkdown = disableExtension Ext_fenced_code_attributes $ getDefaultExtensions "markdown"
+exts GitHubMarkdown = githubMarkdownExtensions
 
---
 
-readMarkdownBlocks :: FilePath -> Flavour -> IO [Block]
-readMarkdownBlocks fp f = do
+{-
+literate haskell code blocks comes out of markdown+lhs to native pandoc with the following classes:
+
+["sourceCode","literate","haskell"]
+
+  and then conversion to github flavour gives:
+
+``` sourceCode
+```
+
+hich doesn't lead to nice code highlighting on github (and elsewhere).  This function tweaks the list so that ["haskell"] is the class, and it all works.
+
+-}
+tweakHaskellCodeBlock :: Block -> Block
+tweakHaskellCodeBlock (CodeBlock (id', cs, kv) b) =
+  CodeBlock (id', bool cs ["haskell"] (Protolude.any ("haskell" ==) cs), kv) b
+tweakHaskellCodeBlock x = x
+
+-- disableExtension Ext_fenced_code_attributes $ 
+
+readPandoc :: FilePath -> Flavour -> IO (Either PandocError Pandoc)
+readPandoc fp f = do
   t <- liftIO $ readFile fp
-  p <- runIO $ readMarkdown (def :: ReaderOptions) { readerExtensions = exts f} t
-  pure $ case p of
-    Left _ -> [Null]
-    Right (Pandoc _ blocks) -> blocks
+  runIO $ readMarkdown (def :: ReaderOptions) { readerExtensions = exts f} t
 
-output :: (Monad m) => Text -> Text -> StateT (Map Text Text) m ()
-output k v = modify (Map.insert k v)
-
-insertOutputs :: Output -> [Block] -> [Block]
-insertOutputs m bs = insertOutput m <$> bs
+renderMarkdown :: Flavour -> Pandoc -> Either PandocError Text
+renderMarkdown f (Pandoc meta bs) =
+  runPure $
+  writeMarkdown (def :: WriterOptions) { writerExtensions = exts f}
+  (Pandoc meta (tweakHaskellCodeBlock <$> bs))
 
 insertOutput :: Output -> Block -> Block
 insertOutput m b = case b of
@@ -69,34 +85,21 @@ insertOutput m b = case b of
     ("output" `elem` classes)
   b' -> b'
 
-runOutput
-  :: FilePath
-  -> Flavour
-  -> StateT Output IO [Block]
-  -> IO (Either PandocError (Text, Map Text Text))
-runOutput fp f bs = do
-  (bs', m) <- runStateT bs Map.empty
-  let postbs = insertOutputs m bs'
-  let res = runPure $
-        writeMarkdown (def :: WriterOptions) { writerExtensions = exts f}
-        (Pandoc nullMeta postbs)
-  either (pure . Left) (\x -> do
-                  writeFile fp x
-                  pure $ Right (x, m)) res
+output :: (Monad m) => Text -> Text -> StateT (Map Text Text) m ()
+output k v = modify (Map.insert k v)
 
-runOutputOn
-  :: FilePath
-  -> Flavour
-  -> StateT Output IO [Block]
-  -> IO (Either PandocError (Text, Output))
-runOutputOn fp f bs = do
-  (bs', m) <- runStateT bs Map.empty
-  let postbs = insertOutputs m bs'
-  let res = runPure $
-        writeNative (def :: WriterOptions) { writerExtensions = exts f}
-        (Pandoc nullMeta postbs)
-  either (pure . Left) (\x -> do
-                  writeFile fp x
-                  pure $ Right (x, m)) res
+runOutput
+  :: (FilePath, Flavour)
+  -> (FilePath, Flavour)
+  -> StateT Output IO ()
+  -> IO (Either PandocError ())
+runOutput (fi, flavi) (fo, flavo) out = do
+  m <- execStateT out Map.empty
+  p <- readPandoc fi flavi
+  let w = do
+              p' <- fmap (\(Pandoc meta bs) -> Pandoc meta (insertOutput m <$> bs)) p
+              renderMarkdown flavo p'
+  either (pure . Left) (\t -> writeFile fo t >> pure (Right ())) w
+
 
 

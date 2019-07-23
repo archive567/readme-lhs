@@ -10,10 +10,10 @@ This is an example of mixing literate haskell with markdown, and in
 using Readme.Lhs. The file is composed of several elements:
 
 -   literate haskell. Bird-tracks are used, as the alternative method is
-    latex rather than markdown, which doesn't survive a pandoc round
+    latex rather than markdown, which doesn’t survive a pandoc round
     trip.
 -   markdown. All non bird-tracked lines are considered to be markdown.
-    It's probably incompatible with haddock, but this may well resolve
+    It’s probably incompatible with haddock, but this may well resolve
     with adoption of the [literate markdown ghc
     proposal](https://gitlab.haskell.org/ghc/ghc/wikis/literate-markdown).
 -   fenced code blocks with an output class, which are used to insert
@@ -24,14 +24,14 @@ using Readme.Lhs. The file is composed of several elements:
 [ghc options](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference)
 --------------------------------------------------------------------------------------------------------
 
-``` sourceCode
+``` haskell
 {-# OPTIONS_GHC -Wall #-}
 ```
 
 [pragmas](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/lang.html)
 ------------------------------------------------------------------------------------
 
-``` sourceCode
+``` haskell
 -- doctest doesn't look at the cabal file, so you need pragmas here
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -47,7 +47,7 @@ using Readme.Lhs. The file is composed of several elements:
 -   [protolude](https://www.hackage.org/package/protolude)
 -   [readme-lhs](https://www.hackage.org/package/readme-lhs)
 
-``` sourceCode
+``` haskell
 import Protolude
 import Readme.Lhs
 ```
@@ -57,13 +57,12 @@ code
 
 -   [hoogle](https://www.stackage.org/package/hoogle)
 
-``` sourceCode
+``` haskell
 main :: IO ()
 main = do
   let n = 10
   let answer = product [1..n::Integer]
-  blocks <- readMarkdownBlocks "example.lhs" LHS
-  _ <- runOutput "readme.md" GitHubMarkdown $ do
+  _ <- runOutput ("example.lhs", LHS) ("readme.md", GitHubMarkdown) $ do
     output "example1" "Simple example of an output"
 ```
 
@@ -71,7 +70,7 @@ main = do
 Simple example of an output
 ```
 
-``` sourceCode
+``` haskell
     output "example2" (show answer)
 ```
 
@@ -81,12 +80,11 @@ Simple example of an output
 3628800
 ```
 
-``` sourceCode
-    pure blocks
+``` haskell
   pure ()
 ```
 
-Output that doesn't exist is simply cleared.
+Output that doesn’t exist is simply cleared.
 
 ``` output
 ```
@@ -101,7 +99,7 @@ other/readme-lhs.hsfiles
 other/batteries.hsfiles
 -----------------------
 
-This is my latest working template, overly influenced by [lexi-lambda's
+This is my latest working template, overly influenced by [lexi-lambda’s
 opinionated
 guide](https://lexi-lambda.github.io/blog/2018/02/10/an-opinionated-guide-to-haskell-in-2018/).
 The template includes:
