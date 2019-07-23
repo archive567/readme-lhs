@@ -14,25 +14,24 @@ using Readme.Lhs. The file is composed of several elements:
     trip.
 -   markdown. All non bird-tracked lines are considered to be markdown.
     It's probably incompatible with haddock, but this may well resolve
-    with adoption of the recent literate markdown [ghc
+    with adoption of the [literate markdown ghc
     proposal](https://gitlab.haskell.org/ghc/ghc/wikis/literate-markdown).
 -   fenced code blocks with an output class, which are used to insert
     computation results. The fenced code blocks look like:
 
-    ``` {.output .example}
-    ```
+    \`\`\`{.output .example} \`\`\`
 
 [ghc options](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference)
 --------------------------------------------------------------------------------------------------------
 
-```haskell
+``` sourceCode
 {-# OPTIONS_GHC -Wall #-}
 ```
 
 [pragmas](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/lang.html)
 ------------------------------------------------------------------------------------
 
-```haskell
+``` sourceCode
 -- doctest doesn't look at the cabal file, so you need pragmas here
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -48,7 +47,7 @@ using Readme.Lhs. The file is composed of several elements:
 -   [protolude](https://www.hackage.org/package/protolude)
 -   [readme-lhs](https://www.hackage.org/package/readme-lhs)
 
-```haskell
+``` sourceCode
 import Protolude
 import Readme.Lhs
 ```
@@ -58,38 +57,38 @@ code
 
 -   [hoogle](https://www.stackage.org/package/hoogle)
 
-```haskell
+``` sourceCode
 main :: IO ()
 main = do
   let n = 10
   let answer = product [1..n::Integer]
-  blocks <- readMarkdownBlocks "example.lhs"
-  _ <- runOutput "readme.md" $ do
+  blocks <- readMarkdownBlocks "example.lhs" LHS
+  _ <- runOutput "readme.md" GitHubMarkdown $ do
     output "example1" "Simple example of an output"
 ```
 
-``` {.output .example1}
+``` output
 Simple example of an output
 ```
 
-```haskell
+``` sourceCode
     output "example2" (show answer)
 ```
 
 10! is equal to:
 
-``` {.output .example2}
+``` output
 3628800
 ```
 
-```haskell
+``` sourceCode
     pure blocks
   pure ()
 ```
 
 Output that doesn't exist is simply cleared.
 
-``` {.output .example3}
+``` output
 ```
 
 hsfiles writeup

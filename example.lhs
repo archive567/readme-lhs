@@ -52,8 +52,8 @@ code
 > main = do
 >   let n = 10
 >   let answer = product [1..n::Integer]
->   blocks <- readMarkdownBlocks "example.lhs"
->   _ <- runOutput "readme.md" $ do
+>   blocks <- readMarkdownBlocks "example.lhs" LHS
+>   _ <- runOutput "readme.md" GitHubMarkdown $ do
 >     output "example1" "Simple example of an output"
 
 ```{.output .example1}

@@ -35,15 +35,19 @@ code :: Text -> [Text] -> Text -> Block
 code name classes =
   CodeBlock (Text.unpack name, Text.unpack <$> classes, []) . Text.unpack
 
-lhsExts :: Extensions
-lhsExts =
-  enableExtension Ext_literate_haskell $
-  getDefaultExtensions "markdown"
 
-readMarkdownBlocks :: FilePath -> IO [Block]
-readMarkdownBlocks fp = do
+data Flavour = GitHubMarkdown | LHS
+
+exts :: Flavour -> Extensions
+exts LHS = enableExtension Ext_literate_haskell $ getDefaultExtensions "markdown"
+exts GitHubMarkdown = disableExtension Ext_fenced_code_attributes $ getDefaultExtensions "markdown"
+
+--
+
+readMarkdownBlocks :: FilePath -> Flavour -> IO [Block]
+readMarkdownBlocks fp f = do
   t <- liftIO $ readFile fp
-  p <- runIO $ readMarkdown (def :: ReaderOptions) { readerExtensions = lhsExts} t
+  p <- runIO $ readMarkdown (def :: ReaderOptions) { readerExtensions = exts f} t
   pure $ case p of
     Left _ -> [Null]
     Right (Pandoc _ blocks) -> blocks
@@ -67,13 +71,14 @@ insertOutput m b = case b of
 
 runOutput
   :: FilePath
+  -> Flavour
   -> StateT Output IO [Block]
   -> IO (Either PandocError (Text, Map Text Text))
-runOutput fp bs = do
+runOutput fp f bs = do
   (bs', m) <- runStateT bs Map.empty
   let postbs = insertOutputs m bs'
   let res = runPure $
-        writeMarkdown (def :: WriterOptions) { writerExtensions = lhsExts}
+        writeMarkdown (def :: WriterOptions) { writerExtensions = exts f}
         (Pandoc nullMeta postbs)
   either (pure . Left) (\x -> do
                   writeFile fp x
@@ -81,13 +86,14 @@ runOutput fp bs = do
 
 runOutputOn
   :: FilePath
+  -> Flavour
   -> StateT Output IO [Block]
   -> IO (Either PandocError (Text, Output))
-runOutputOn fp bs = do
+runOutputOn fp f bs = do
   (bs', m) <- runStateT bs Map.empty
   let postbs = insertOutputs m bs'
   let res = runPure $
-        writeNative (def :: WriterOptions) { writerExtensions = lhsExts}
+        writeNative (def :: WriterOptions) { writerExtensions = exts f}
         (Pandoc nullMeta postbs)
   either (pure . Left) (\x -> do
                   writeFile fp x
