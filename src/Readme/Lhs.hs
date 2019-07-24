@@ -71,7 +71,9 @@ data Flavour = GitHubMarkdown | LHS
 --  exts GitHubMarkdown is equivalent to 'gfm'
 exts :: Flavour -> Extensions
 exts LHS = enableExtension Ext_literate_haskell $ getDefaultExtensions "markdown"
-exts GitHubMarkdown = githubMarkdownExtensions
+exts GitHubMarkdown =
+  enableExtension Ext_fenced_code_attributes
+  githubMarkdownExtensions
 
 {- |
 literate haskell code blocks comes out of markdown+lhs to native pandoc with the following classes:
