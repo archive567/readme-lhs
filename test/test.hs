@@ -8,5 +8,5 @@ import Test.DocTest
 
 main :: IO ()
 main =
-  doctest ["example/example.lhs"]
+  doctest ["src/Readme/Lhs.hs"]
 

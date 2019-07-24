@@ -1,7 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Readme.Lhs where
+module Readme.Lhs
+  ( para
+  , plain
+  , table
+  , code
+  , Flavour(..)
+  , readPandoc
+  , renderMarkdown
+  , output
+  , runOutput
+  , tweakHaskellCodeBlock
+  ) where
 
 import Protolude
 import Data.Text as Text
@@ -12,16 +23,30 @@ import qualified Data.Map as Map
 
 type Output = Map Text Text
 
+-- | doctest
+-- >>> :set -XOverloadedStrings
+
+-- | turn text into a Pandoc Paragraph Block
+-- >>> para "hello"
+-- Para [Str "hello"]
 para :: Text -> Block
 para = Para . fmap (Str . Text.unpack) . Text.lines
 
+-- | turn text into a Pandoc Plain Block
+-- >>> plain "hello"
+-- Plain [Str "hello"]
 plain :: Text -> Block
-plain = Para . fmap (Str . Text.unpack) . Text.lines
+plain = Plain . fmap (Str . Text.unpack) . Text.lines
 
+-- |
+-- >>> inline "two\nlines"
+-- [Str "two",Str "lines"]
 inline :: Text -> [Inline]
 inline = fmap (Str . Text.unpack) . Text.lines
 
 -- | table caption headers alignments widths rows
+-- >>> table "an example table" ["first column", "second column"] [AlignLeft, AlignRight] [0,0] [["first row", "1"], ["second row", "1000"]]
+-- Table [Str "an example table"] [AlignLeft,AlignRight] [0.0,0.0] [[Para [Str "first column"]],[Para [Str "second column"]]] [[[Para [Str "first row"]],[Para [Str "1"]]],[[Para [Str "second row"]],[Para [Str "1000"]]]]
 table :: Text -> [Text] -> [Alignment] -> [Int] -> [[Text]] -> Block
 table caption hs as ws rs =
       Table
@@ -31,19 +56,24 @@ table caption hs as ws rs =
       ((:[]) . para <$> hs)
       (fmap ((:[]) . para) <$> rs)
 
+-- | code identifier classes text
+-- >>> code "name" ["sourceCode", "literate", "haskell"] "x = 1\n"
+-- CodeBlock ("name",["sourceCode","literate","haskell"],[]) "x = 1\n"
 code :: Text -> [Text] -> Text -> Block
 code name classes =
   CodeBlock (Text.unpack name, Text.unpack <$> classes, []) . Text.unpack
 
-
+-- | use LHS when you want to just add output to a *.lhs
+-- | use GitHubMarkdown for rendering code and results on github
 data Flavour = GitHubMarkdown | LHS
 
+-- | exts LHS is equivalent to 'markdown+lhs'
+--  exts GitHubMarkdown is equivalent to 'gfm'
 exts :: Flavour -> Extensions
 exts LHS = enableExtension Ext_literate_haskell $ getDefaultExtensions "markdown"
 exts GitHubMarkdown = githubMarkdownExtensions
 
-
-{-
+{- |
 literate haskell code blocks comes out of markdown+lhs to native pandoc with the following classes:
 
 ["sourceCode","literate","haskell"]
@@ -53,7 +83,7 @@ literate haskell code blocks comes out of markdown+lhs to native pandoc with the
 ``` sourceCode
 ```
 
-hich doesn't lead to nice code highlighting on github (and elsewhere).  This function tweaks the list so that ["haskell"] is the class, and it all works.
+which doesn't lead to nice code highlighting on github (and elsewhere).  This function tweaks the list so that ["haskell"] is the class, and it all works.
 
 -}
 tweakHaskellCodeBlock :: Block -> Block
@@ -61,13 +91,13 @@ tweakHaskellCodeBlock (CodeBlock (id', cs, kv) b) =
   CodeBlock (id', bool cs ["haskell"] (Protolude.any ("haskell" ==) cs), kv) b
 tweakHaskellCodeBlock x = x
 
--- disableExtension Ext_fenced_code_attributes $ 
-
+-- | read a file into the pandoc AST
 readPandoc :: FilePath -> Flavour -> IO (Either PandocError Pandoc)
 readPandoc fp f = do
   t <- liftIO $ readFile fp
   runIO $ readMarkdown (def :: ReaderOptions) { readerExtensions = exts f} t
 
+-- | render a pandoc AST
 renderMarkdown :: Flavour -> Pandoc -> Either PandocError Text
 renderMarkdown f (Pandoc meta bs) =
   runPure $
@@ -85,9 +115,11 @@ insertOutput m b = case b of
     ("output" `elem` classes)
   b' -> b'
 
+-- | add an output key-value pair to state
 output :: (Monad m) => Text -> Text -> StateT (Map Text Text) m ()
 output k v = modify (Map.insert k v)
 
+-- | insert outputs into a new file
 runOutput
   :: (FilePath, Flavour)
   -> (FilePath, Flavour)
@@ -100,6 +132,3 @@ runOutput (fi, flavi) (fo, flavo) out = do
               p' <- fmap (\(Pandoc meta bs) -> Pandoc meta (insertOutput m <$> bs)) p
               renderMarkdown flavo p'
   either (pure . Left) (\t -> writeFile fo t >> pure (Right ())) w
-
-
-

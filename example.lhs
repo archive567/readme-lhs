@@ -6,17 +6,8 @@ pagetitle: readme-lhs
 ===
 
 <blockquote cite>
-The language in which we express our ideas has a strong influence on our thought processes. ~ Knuth
+The language in which we express our ideas has a strong influence on our thought processes. Knuth
 </blockquote>
-
-This is an example of mixing literate haskell with markdown, and in using Readme.Lhs.  The file is composed of several elements:
-
-- literate haskell. Bird-tracks are used, as the alternative method is latex rather than markdown, which doesn't survive a pandoc round trip.
-- markdown. All non bird-tracked lines are considered to be markdown.  It's probably incompatible with haddock, but this may well resolve with adoption of the [literate markdown ghc proposal](https://gitlab.haskell.org/ghc/ghc/wikis/literate-markdown).
-- fenced code blocks with an output class, which are used to insert computation results. The fenced code blocks look like:
-
-    \`\`\`{.output .example}
-    \`\`\`
 
 [ghc options](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference)
 ---
@@ -26,7 +17,6 @@ This is an example of mixing literate haskell with markdown, and in using Readme
 [pragmas](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/lang.html)
 ------------------------------------------------------------------------------------
 
-> -- doctest doesn't look at the cabal file, so you need pragmas here
 > {-# LANGUAGE NoImplicitPrelude #-}
 > {-# LANGUAGE OverloadedStrings #-}
 > {-# LANGUAGE DataKinds #-}
@@ -52,7 +42,7 @@ code
 > main = do
 >   let n = 10
 >   let answer = product [1..n::Integer]
->   _ <- runOutput ("example.lhs", LHS) ("readme.md", GitHubMarkdown) $ do
+>   void $ runOutput ("example.lhs", LHS) ("readme.md", GitHubMarkdown) $ do
 >     output "example1" "Simple example of an output"
 
 ```{.output .example1}
@@ -67,10 +57,6 @@ code
 
 ```
 
-
->   pure ()
->
-
 Output that doesn't exist is simply cleared.
 
 ``` {.output .example3}
@@ -78,25 +64,35 @@ The text inside this code block will be
   cleared on execution.
 ```
 
-hsfiles writeup
+Technicals
 ===
 
-A literate-programming friendly; tight work-flow stack template.
+This is an example of mixing literate haskell with markdown, and in using readme-lhs.  The file is composed of several elements:
 
-other/readme-lhs.hsfiles
+- literate haskell. Bird-tracks are used, as the alternative lhs method is latex. Pandoc can read this, but defaults to bird tracks when rendering `markdown+lhs`.
+- markdown. All non bird-tracked lines are considered to be markdown.  It's probably incompatible with haddock. This might be easily fixable.
+- fenced code blocks with an output class, which are used to insert computation results. The fenced code blocks look like:
 
-other/batteries.hsfiles
----
+    \`\`\`{.output .example}
+    \`\`\`
 
-This is my latest working template, overly influenced by [lexi-lambda's opinionated guide](https://lexi-lambda.github.io/blog/2018/02/10/an-opinionated-guide-to-haskell-in-2018/). The template includes:
+As it currently stands, ghc cannot read a file with fenced code-blocks that look like:
 
-- some minor tweaks to protolude
-- lens, foldl, formatting & text as must have libraries
-- generic-lens-labels
+```
+\```haskell
+\```
+```
+
+Given this, a file cannot be both a valid haskell file, and a markdown file that is rendered nicely by github. This would resolve with adoption of the [literate markdown ghc proposal](https://gitlab.haskell.org/ghc/ghc/wikis/literate-markdown).
+
+template
+===
+
+A bare bones stack template is located in [other/readme-lhs.hsfiles](other/readme-lhs.hsfiles). It contains what you need to quickly get started with literate programming.
 
 workflow
 ---
 
 ```
-stack build --exec "$(stack path --local-install-root)/bin/readme-lhs-example" --file-watch
+stack build --test --exec "$(stack path --local-install-root)/bin/readme-lhs-example" --file-watch
 ```
