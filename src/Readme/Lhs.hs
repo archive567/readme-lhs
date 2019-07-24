@@ -9,9 +9,13 @@ module Readme.Lhs
   , Flavour(..)
   , readPandoc
   , renderMarkdown
+  , Output(..)
+  , OutputMap
   , output
   , runOutput
   , tweakHaskellCodeBlock
+  , Block(..)
+  , module Text.Pandoc.Definition
   ) where
 
 import Protolude
@@ -21,7 +25,10 @@ import Text.Pandoc.Options
 import Text.Pandoc
 import qualified Data.Map as Map
 
-type Output = Map Text Text
+-- | output can be native pandoc, or text that replaces or inserts into the output code block.
+data Output = Native Block | Replace Text | Fence Text
+
+type OutputMap = Map Text Output
 
 -- | doctest
 -- >>> :set -XOverloadedStrings
@@ -106,26 +113,34 @@ renderMarkdown f (Pandoc meta bs) =
   writeMarkdown (def :: WriterOptions) { writerExtensions = exts f}
   (Pandoc meta (tweakHaskellCodeBlock <$> bs))
 
-insertOutput :: Output -> Block -> Block
+insertOutput :: OutputMap -> Block -> Block
 insertOutput m b = case b of
   (b'@ (CodeBlock (id', classes, kv) _)) ->
     bool b'
     (maybe
      (CodeBlock (id', classes, kv) mempty)
-     (\x -> CodeBlock (id', classes, kv) . maybe mempty Text.unpack $ Map.lookup x m)
+     (\x ->
+        
+        (maybe (CodeBlock (id', classes, kv) mempty)
+         (\ot -> case ot of
+              Fence t -> CodeBlock (id', classes, kv) . Text.unpack $ t
+              Replace t -> plain t
+              Native bs -> bs
+         )
+        (Map.lookup x m)))
      (headMay . Protolude.filter ((`elem` classes) . Text.unpack) . Map.keys $ m))
     ("output" `elem` classes)
   b' -> b'
 
 -- | add an output key-value pair to state
-output :: (Monad m) => Text -> Text -> StateT (Map Text Text) m ()
+output :: (Monad m) => Text -> Output -> StateT OutputMap m ()
 output k v = modify (Map.insert k v)
 
 -- | insert outputs into a new file
 runOutput
   :: (FilePath, Flavour)
   -> (FilePath, Flavour)
-  -> StateT Output IO ()
+  -> StateT OutputMap IO ()
   -> IO (Either PandocError ())
 runOutput (fi, flavi) (fo, flavo) out = do
   m <- execStateT out Map.empty

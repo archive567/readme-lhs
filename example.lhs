@@ -43,18 +43,33 @@ code
 >   let n = 10
 >   let answer = product [1..n::Integer]
 >   void $ runOutput ("example.lhs", LHS) ("readme.md", GitHubMarkdown) $ do
->     output "example1" "Simple example of an output"
+>     output "example1" (Fence "Simple example of an output")
 
 ```{.output .example1}
 
 ```
 
->     output "example2" (show answer)
+>     output "example2" (Fence (show answer))
 
 10! is equal to:
 
 ```{.output .example2}
 
+```
+
+As well as fenced output, output can be Text that replaces the {.output} code block
+
+>     output "example3" (Replace "Fenced code block was overwritten")
+
+```{.output .example3}
+This will be replaced.
+```
+
+or be native pandoc.
+
+>     output "example4" (Native $ BulletList [[plain "a"], [plain "bullet"], [plain "list"]])
+
+```{.output .example4}
 ```
 
 Output that doesn't exist is simply cleared.

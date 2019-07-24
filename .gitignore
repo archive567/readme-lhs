@@ -1,5 +1,4 @@
 /.stack-work/
 TAGS
 *.DS_Store
-/readme-lhs.cabal
 /dist-newstyle
