@@ -16,6 +16,7 @@ module Readme.Lhs
   , tweakHaskellCodeBlock
   , Block(..)
   , module Text.Pandoc.Definition
+  , Alignment(..)
   ) where
 
 import Protolude
@@ -26,7 +27,7 @@ import Text.Pandoc
 import qualified Data.Map as Map
 
 -- | output can be native pandoc, or text that replaces or inserts into the output code block.
-data Output = Native Block | Replace Text | Fence Text
+data Output = Native [Block] | Replace Text | Fence Text
 
 type OutputMap = Map Text Output
 
@@ -113,24 +114,23 @@ renderMarkdown f (Pandoc meta bs) =
   writeMarkdown (def :: WriterOptions) { writerExtensions = exts f}
   (Pandoc meta (tweakHaskellCodeBlock <$> bs))
 
-insertOutput :: OutputMap -> Block -> Block
+insertOutput :: OutputMap -> Block -> [Block]
 insertOutput m b = case b of
   (b'@ (CodeBlock (id', classes, kv) _)) ->
-    bool b'
+    bool [b']
     (maybe
-     (CodeBlock (id', classes, kv) mempty)
+     [CodeBlock (id', classes, kv) mempty]
      (\x ->
-        
-        (maybe (CodeBlock (id', classes, kv) mempty)
+        (maybe [CodeBlock (id', classes, kv) mempty]
          (\ot -> case ot of
-              Fence t -> CodeBlock (id', classes, kv) . Text.unpack $ t
-              Replace t -> plain t
+              Fence t -> [CodeBlock (id', classes, kv) . Text.unpack $ t]
+              Replace t -> [plain t]
               Native bs -> bs
          )
         (Map.lookup x m)))
      (headMay . Protolude.filter ((`elem` classes) . Text.unpack) . Map.keys $ m))
     ("output" `elem` classes)
-  b' -> b'
+  b' -> [b']
 
 -- | add an output key-value pair to state
 output :: (Monad m) => Text -> Output -> StateT OutputMap m ()
@@ -146,6 +146,6 @@ runOutput (fi, flavi) (fo, flavo) out = do
   m <- execStateT out Map.empty
   p <- readPandoc fi flavi
   let w = do
-              p' <- fmap (\(Pandoc meta bs) -> Pandoc meta (insertOutput m <$> bs)) p
+              p' <- fmap (\(Pandoc meta bs) -> Pandoc meta (mconcat $ insertOutput m <$> bs)) p
               renderMarkdown flavo p'
   either (pure . Left) (\t -> writeFile fo t >> pure (Right ())) w

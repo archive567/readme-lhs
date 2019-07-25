@@ -67,7 +67,7 @@ This will be replaced.
 
 or be native pandoc.
 
->     output "example4" (Native $ BulletList [[plain "a"], [plain "bullet"], [plain "list"]])
+>     output "example4" (Native [BulletList [[plain "a"], [plain "bullet"], [plain "list"]]])
 
 ```{.output .example4}
 ```
