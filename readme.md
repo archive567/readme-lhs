@@ -9,14 +9,14 @@ thought processes. Knuth
 [ghc options](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference)
 --------------------------------------------------------------------------------------------------------
 
-``` haskell
+``` {.haskell}
 {-# OPTIONS_GHC -Wall #-}
 ```
 
 [pragmas](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/lang.html)
 ------------------------------------------------------------------------------------
 
-``` haskell
+``` {.haskell}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DataKinds #-}
@@ -31,7 +31,7 @@ thought processes. Knuth
 -   [protolude](https://www.hackage.org/package/protolude)
 -   [readme-lhs](https://www.hackage.org/package/readme-lhs)
 
-``` haskell
+``` {.haskell}
 import Protolude
 import Readme.Lhs
 ```
@@ -41,33 +41,51 @@ code
 
 -   [hoogle](https://www.stackage.org/package/hoogle)
 
-``` haskell
+``` {.haskell}
 main :: IO ()
 main = do
   let n = 10
   let answer = product [1..n::Integer]
   void $ runOutput ("example.lhs", LHS) ("readme.md", GitHubMarkdown) $ do
-    output "example1" "Simple example of an output"
+    output "example1" (Fence "Simple example of an output")
 ```
 
-``` output
+``` {.output .example1}
 Simple example of an output
 ```
 
-``` haskell
-    output "example2" (show answer)
+``` {.haskell}
+    output "example2" (Fence (show answer))
 ```
 
 10! is equal to:
 
-``` output
+``` {.output .example2}
 3628800
 ```
 
+As well as fenced output, output can be Text that replaces the {.output}
+code block
+
+``` {.haskell}
+    output "example3" (Replace "Fenced code block was overwritten")
+```
+
+Fenced code block was overwritten
+
+or be native pandoc.
+
+``` {.haskell}
+    output "example4" (Native [BulletList [[plain "a"], [plain "bullet"], [plain "list"]]])
+```
+
+-   a
+-   bullet
+-   list
+
 Output that doesn’t exist is simply cleared.
 
-``` output
-```
+Fenced code block was overwritten
 
 Technicals
 ==========
@@ -78,9 +96,11 @@ using readme-lhs. The file is composed of several elements:
 -   literate haskell. Bird-tracks are used, as the alternative lhs
     method is latex. Pandoc can read this, but defaults to bird tracks
     when rendering `markdown+lhs`.
+
 -   markdown. All non bird-tracked lines are considered to be markdown.
     It’s probably incompatible with haddock. This might be easily
     fixable.
+
 -   fenced code blocks with an output class, which are used to insert
     computation results. The fenced code blocks look like:
 

@@ -251,10 +251,10 @@ main :: IO ()
 main = do
   doctest ["app/example.lhs"]
 {-# START_FILE stack.yaml #-}
-resolver: lts-13.29
+resolver: lts-14.11
 
 packages:
   - .
 
 extra-deps:
-  - readme-lhs-0.2.0
+  - readme-lhs-0.2.2
