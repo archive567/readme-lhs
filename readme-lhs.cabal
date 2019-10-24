@@ -1,6 +1,6 @@
 cabal-version: 1.12
 name:           readme-lhs
-version:        0.2.0
+version:        0.2.1
 synopsis:       See readme.md
 description:    See readme.md for description.
 category:       Development
@@ -14,7 +14,6 @@ license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     readme.md
-    stack.yaml
     other/readme-lhs.hsfiles
 
 source-repository head
