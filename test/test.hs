@@ -9,6 +9,7 @@ import Readme.Lhs
 
 -- | doctest
 -- >>> :set -XOverloadedStrings
+-- >>> import Readme.Lhs
 
 -- | The main differences between LHS and GitHubMarkdown is that GitHubMarkdown parses bird tracks as a BlockQuote.
 -- >>> readPandoc "test/test.md" GitHubMarkdown
