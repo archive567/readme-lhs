@@ -1,10 +1,9 @@
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# OPTIONS_GHC -Wall #-}
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
 
 module Main where
 
-import Protolude
+import Prelude
 import Test.DocTest
 import Readme.Lhs
 
