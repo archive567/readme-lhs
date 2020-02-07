@@ -14,6 +14,7 @@ module Readme.Lhs
     Flavour (..),
     readPandoc,
     renderMarkdown,
+    renderHtml,
     Output (..),
     OutputMap,
     output,
@@ -31,10 +32,12 @@ import Data.Bool
 import qualified Data.Map as Map
 import Data.Map (Map)
 import Data.Text as Text
+import Data.Text.Lazy (toStrict)
 import qualified Data.Text.IO as Text
 import Text.Pandoc
 import Text.Pandoc.Definition
 import Prelude
+import qualified Text.Blaze.Html.Renderer.Text as Blaze
 
 -- | output can be native pandoc, or text that replaces or inserts into the output code block.
 data Output = Native [Block] | Replace Text | Fence Text
@@ -113,7 +116,7 @@ code name classes =
 
 -- | use LHS when you want to just add output to a *.lhs
 -- | use GitHubMarkdown for rendering code and results on github
-data Flavour = GitHubMarkdown | LHS
+data Flavour = GitHubMarkdown | LHS | Html
 
 -- | exts LHS is equivalent to 'markdown+lhs'
 --  exts GitHubMarkdown is equivalent to 'gfm'
@@ -123,6 +126,7 @@ exts GitHubMarkdown =
   enableExtension
     Ext_fenced_code_attributes
     githubMarkdownExtensions
+exts Html = getDefaultExtensions "html"
 
 -- |
 -- literate haskell code blocks comes out of markdown+lhs to native pandoc with the following classes:
@@ -153,6 +157,15 @@ renderMarkdown f (Pandoc meta bs) =
     writeMarkdown
       (def :: WriterOptions) {writerExtensions = exts f}
       (Pandoc meta (tweakHaskellCodeBlock <$> bs))
+
+-- | render a pandoc AST to Html
+renderHtml :: Flavour -> Pandoc -> Either PandocError Text
+renderHtml f (Pandoc meta bs) =
+  runPure $ do
+    h <- writeHtml5
+      (def :: WriterOptions) {writerExtensions = exts f}
+      (Pandoc meta (tweakHaskellCodeBlock <$> bs))
+    pure $ toStrict $ Blaze.renderHtml h
 
 insertOutput :: OutputMap -> Block -> [Block]
 insertOutput m b = case b of
@@ -194,5 +207,7 @@ runOutput (fi, flavi) (fo, flavo) out = do
   p <- readPandoc fi flavi
   let w = do
         p' <- fmap (\(Pandoc meta bs) -> Pandoc meta (mconcat $ insertOutput m <$> bs)) p
-        renderMarkdown flavo p'
+        case flavo of
+          Html -> renderHtml flavo p'
+          _ -> renderMarkdown flavo p'
   either (pure . Left) (\t -> Text.writeFile fo t >> pure (Right ())) w
