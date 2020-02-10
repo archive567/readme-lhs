@@ -18,6 +18,7 @@ module Readme.Lhs
     Output (..),
     OutputMap,
     output,
+    insertOutput,
     runOutput,
     tweakHaskellCodeBlock,
     Block (..),
@@ -151,6 +152,8 @@ readPandoc fp f = do
   runIO $ readMarkdown (def :: ReaderOptions) {readerExtensions = exts f} (Text.pack t)
 
 -- | render a pandoc AST
+-- >>> renderMarkdown GitHubMarkdown (Pandoc mempty [Table [] [] [] [] [[[Para [Str "1"]],[Para [Str "2"]]]]])
+-- Right "|     |     |\n|-----|-----|\n| 1   | 2   |"
 renderMarkdown :: Flavour -> Pandoc -> Either PandocError Text
 renderMarkdown f (Pandoc meta bs) =
   runPure $
@@ -158,7 +161,13 @@ renderMarkdown f (Pandoc meta bs) =
       (def :: WriterOptions) {writerExtensions = exts f}
       (Pandoc meta (tweakHaskellCodeBlock <$> bs))
 
+-- Blaze.renderHtml <$> (runPure $ writeHtml5 (def {writerExtensions = enableExtension Ext_multiline_tables (getDefaultExtensions "html")}) (Pandoc mempty [Table [Str "test"] [AlignLeft,AlignLeft] [0.0,0.0] [[Plain [Str "first",Space,Str "column"]],[Plain [Str "second",Space,Str "column"]]] [[[Plain [Str "1"]]  ,[Plain [Str "2"]]] ,[[Plain [Str "3"]]  ,[Plain [Str "4"]]]]]
+
 -- | render a pandoc AST to Html
+-- Note that text align for a Table cannot be blank when rendering to html
+-- >>> Blaze.renderHtml <$> (runPure $ writeHtml5 (def {writerExtensions = (getDefaultExtensions "html")}) (Pandoc mempty [Table [] [AlignLeft,AlignLeft] [] [] [[[Plain [Str "1"]]  ,[Plain [Str "2"]]]]]))
+-- Right "<table>\n<tbody>\n<tr class=\"odd\">\n<td style=\"text-align: left;\">1</td>\n<td style=\"text-align: left;\">2</td>\n</tr>\n</tbody>\n</table>"
+--
 renderHtml :: Flavour -> Pandoc -> Either PandocError Text
 renderHtml f (Pandoc meta bs) =
   runPure $ do
@@ -192,6 +201,10 @@ insertOutput m b = case b of
     headMaybe [] = Nothing
     headMaybe (x : _) = Just x
 
+insertOutputs :: OutputMap -> Pandoc -> Pandoc
+insertOutputs out (Pandoc meta bs) =
+  Pandoc meta (mconcat $ insertOutput out <$> bs)
+
 -- | add an output key-value pair to state
 output :: (Monad m) => Text -> Output -> StateT OutputMap m ()
 output k v = modify (Map.insert k v)
@@ -206,8 +219,9 @@ runOutput (fi, flavi) (fo, flavo) out = do
   m <- execStateT out Map.empty
   p <- readPandoc fi flavi
   let w = do
-        p' <- fmap (\(Pandoc meta bs) -> Pandoc meta (mconcat $ insertOutput m <$> bs)) p
+        p' <- insertOutputs m <$> p
         case flavo of
           Html -> renderHtml flavo p'
           _ -> renderMarkdown flavo p'
   either (pure . Left) (\t -> Text.writeFile fo t >> pure (Right ())) w
+

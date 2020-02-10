@@ -74,6 +74,7 @@ test-suite test
   default-extensions: NoImplicitPrelude UnicodeSyntax NegativeLiterals OverloadedStrings
   build-depends:
       base >=4.7 && <5
+    , containers
     , doctest
     , readme-lhs
   default-language: Haskell2010
