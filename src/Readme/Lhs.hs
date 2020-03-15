@@ -9,6 +9,7 @@ module Readme.Lhs
     table',
     code,
     link,
+    linkTooltip,
     badge,
     image,
     Flavour (..),
@@ -71,6 +72,12 @@ inline = fmap (Str . Text.unpack) . Text.lines
 -- Link ("",[],[]) [Str "test"] ("link","")
 link :: Text -> Text -> Inline
 link name url = Link ("", [], []) [Str (Text.unpack name)] (Text.unpack url, "")
+
+-- | create a link
+-- >>> linkTooltip "test" "link" "tooltip"
+-- Link ("",[],[]) [Str "test"] ("link","tooltip")
+linkTooltip :: Text -> Text -> Text -> Inline
+linkTooltip name url tooltip = Link ("", [], []) [Str (Text.unpack name)] (Text.unpack url, Text.unpack tooltip)
 
 -- | create an image link
 -- >>> image "test" "imagelink.svg"
