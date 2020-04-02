@@ -6,11 +6,25 @@ The language in which we express our ideas has a strong influence on our
 thought processes. Knuth
 </blockquote>
 
+This is how I start a new haskell library refactor. I pick a new ghc version, and a new stack lts, and set this project up with no compile warts.  This gives me the full pandoc tree, which is a great base to get a fast workflow loop going for the repo you've created.
+
+
 [ghc options](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/flags.html#flag-reference)
 --------------------------------------------------------------------------------------------------------
 
 ``` {.haskell}
 {-# OPTIONS_GHC -Wall #-}
+```
+
+and in cabal file:
+
+```
+ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
 ```
 
 [pragmas](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/lang.html)
@@ -24,6 +38,14 @@ thought processes. Knuth
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleInstances #-}
 ```
+
+I have:
+  - NegativeLiterals
+  - OverloadedStrings
+  - UnicodeSyntax
+
+... permanently turned on in the cabal file
+
 
 [libraries](https://www.stackage.org/)
 --------------------------------------

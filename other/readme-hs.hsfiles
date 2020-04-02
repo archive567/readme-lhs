@@ -1,0 +1,197 @@
+{-# START_FILE app/example.md #-}
+{{name}}
+===
+
+[![Build Status](https://travis-ci.org/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}.svg)](https://travis-ci.org/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}) [![Hackage](https://img.shields.io/hackage/v/{{name}}.svg)](https://hackage.haskell.org/package/{{name}}) [![lts](https://www.stackage.org/package/{{name}}/badge/lts)](http://stackage.org/lts/package/{{name}}) [![nightly](https://www.stackage.org/package/{{name}}/badge/nightly)](http://stackage.org/nightly/package/{{name}}) 
+
+output
+------
+
+10! is equal to:
+
+``` {.output .example}
+```
+
+flow
+----
+
+```
+stack build --test --exec "$(stack path --local-install-root)/bin/{{name}}" --file-watch
+```
+
+{-# START_FILE app/example.hs #-}
+{-# OPTIONS_GHC -Wall #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE FlexibleInstances #-}
+
+import Protolude
+import Readme.Lhs
+
+main :: IO ()
+main = do
+  let n = 10
+  let answer = product [1..n::Integer]
+  void $ runOutput ("app/example.md", GitHubMarkdown) ("readme.md", GitHubMarkdown) $
+    output "example" (Fence $ show answer)
+
+{-# START_FILE {{name}}.cabal #-}
+name: {{name}}
+version: 0.0.0.1
+synopsis: See readme.md
+description: See readme.md for description.
+cabal-version: 2.0
+category: project
+author: {{author-name}}{{^author-name}}Author name here{{/author-name}}
+maintainer: {{author-email}}
+copyright: {{copyright}}{{^copyright}}{{year}}{{^year}}2017{{/year}} {{authorName}}{{^authorName}}Author name here{{/authorName}}{{/copyright}}
+license: BSD3
+homepage: https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}#readme
+bug-reports: https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}/issues
+build-type: Simple
+extra-source-files:
+  readme.md
+source-repository head
+  type: git
+  location: https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}
+
+executable {{name}}
+  main-is: example.hs
+  hs-source-dirs: app
+  default-extensions:
+    NegativeLiterals
+    NoImplicitPrelude
+    OverloadedStrings
+    UnicodeSyntax
+  ghc-options:
+    -funbox-strict-fields
+    -fforce-recomp
+    -threaded
+    -rtsopts
+    -with-rtsopts=-N
+  build-depends:
+      base >= 4.7 && < 5
+    , protolude >= 0.2.3
+    , readme-lhs >= 0.4.0
+  default-language: Haskell2010
+
+{-# START_FILE .gitignore #-}
+/.stack-work/
+/dist-newstyle/
+TAGS
+
+{-# START_FILE .gitattributes #-}
+other/* linguist-documentation
+index.html linguist-documentation
+
+{-# START_FILE Setup.hs #-}
+import Distribution.Simple
+main = defaultMain
+
+{-# START_FILE LICENSE #-}
+Copyright {{author-name}}{{^author-name}}Author name here{{/author-name}} (c) {{year}}{{^year}}2020{{/year}}
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+
+    * Neither the name of {{author-name}}{{^author-name}}Author name here{{/author-name}} nor the names of other
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+{-# START_FILE .travis.yml #-}
+language: haskell
+dist: trusty
+
+cache:
+  directories:
+  - $HOME/.stack
+  - $TRAVIS_BUILD_DIR/.stack-work
+  - $TRAVIS_BUILD_DIR/dist-newstyle
+
+cabal: "2.4"
+
+matrix:
+  include:
+    - env: BUILD=cabal
+      ghc: "8.6.5"
+    - env: BUILD=stack ARGS="--resolver lts-13.29 --system-ghc"
+      ghc: "8.6.5"
+      # a -Werror build that is allowed to fail
+    - env: BUILD=werror ARGS="--resolver lts-13.29 --system-ghc"
+      ghc: "8.6.5"
+    - env: BUILD=stack ARGS="--resolver nightly --system-ghc"
+      ghc: "8.6.5"
+
+  allow_failures:
+    - env: BUILD=stack ARGS="--resolver nightly --system-ghc"
+    - env: BUILD=werror ARGS="--resolver lts-13.29 --system-ghc"
+
+install:
+- |
+  case "$BUILD" in
+    cabal)
+      cabal --version
+      ghc --version
+      ;;
+    stack|werror)
+      ghc --version
+      PATH=$HOME/.local/bin:$PATH
+      mkdir -p ~/.local/bin
+      if [ `uname` = "Darwin" ]
+      then
+        travis_retry curl --insecure -L https://get.haskellstack.org/stable/osx-x86_64.tar.gz | tar xz --strip-components=1 --include '*/stack' -C ~/.local/bin
+      else
+        travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+      fi
+      ;;
+  esac
+
+script:
+- |
+  case "$BUILD" in
+    cabal)
+      cabal v2-update
+      cabal v2-build all
+      cabal v2-test all --enable-test
+      ;;
+    stack)
+      stack --no-terminal $ARGS test --haddock --no-haddock-deps
+      ;;
+    werror)
+      stack --no-terminal $ARGS test --haddock --no-haddock-deps --ghc-options -Werror --ghc-options -Wcompat --ghc-options -Wincomplete-record-updates --ghc-options -Wincomplete-uni-patterns --ghc-options -Wredundant-constraints
+      ;;
+  esac
+
+{-# START_FILE stack.yaml #-}
+resolver: lts-14.13
+
+packages:
+  - .
+
+extra-deps:
+  - readme-lhs-0.4.0
