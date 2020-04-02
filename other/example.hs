@@ -1,0 +1,15 @@
+{-# OPTIONS_GHC -Wall #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE FlexibleInstances #-}
+
+import Protolude
+import Readme.Lhs
+
+main :: IO ()
+main = do
+  void $ runOutput ("other/readme_.md", GitHubMarkdown) ("readme.md", GitHubMarkdown) $ do
+    output "example" (Fence "Simple example of an output")

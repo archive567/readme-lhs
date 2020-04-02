@@ -1,8 +1,3 @@
----
-pagetitle: readme-lhs
----
-
-
 [readme-lhs](https://tonyday567.github.io/readme-lhs/index.html) [![Build Status](https://travis-ci.org/tonyday567/readme-lhs.svg)](https://travis-ci.org/tonyday567/readme-lhs)
 ================================================================================================================================================================================
 
@@ -77,7 +72,7 @@ main = do
     output "example1" (Fence "Simple example of an output")
 ```
 
-``` {.output .example1}
+``` {.output .example}
 Simple example of an output
 ```
 

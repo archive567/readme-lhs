@@ -1,4 +1,4 @@
-cabal-version: 1.12
+cabal-version: 2.4
 name:           readme-lhs
 version:        0.4.0
 synopsis:       See readme.md
@@ -9,7 +9,7 @@ bug-reports:    https://github.com/tonyday567/readme-lhs/issues
 author:         Tony Day
 maintainer:     tonyday567@gmail.com
 copyright:      2016 Tony Day
-license:        BSD3
+license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
@@ -51,11 +51,9 @@ library
   default-language: Haskell2010
 
 executable readme-lhs-example
-  main-is: example.lhs
-  other-modules:
-      Paths_readme_lhs
+  main-is: example.hs
   hs-source-dirs:
-      ./
+      other
   default-extensions: NoImplicitPrelude UnicodeSyntax NegativeLiterals OverloadedStrings
   ghc-options: -funbox-strict-fields -fforce-recomp -threaded -rtsopts -with-rtsopts=-N
   build-depends:
@@ -67,8 +65,6 @@ executable readme-lhs-example
 test-suite test
   type: exitcode-stdio-1.0
   main-is: test.hs
-  other-modules:
-      Paths_readme_lhs
   hs-source-dirs:
       test
   default-extensions: NoImplicitPrelude UnicodeSyntax NegativeLiterals OverloadedStrings

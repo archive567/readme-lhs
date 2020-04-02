@@ -1,6 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 module Readme.Lhs
   ( para,
@@ -29,16 +30,12 @@ module Readme.Lhs
 where
 
 import Control.Monad.IO.Class
-import Control.Monad.Trans.State.Lazy
-import Data.Bool
 import qualified Data.Map as Map
-import Data.Map (Map)
 import Data.Text as Text
-import Data.Text.Lazy (toStrict)
 import qualified Data.Text.IO as Text
 import Text.Pandoc
 import Text.Pandoc.Definition
-import Prelude
+import Protolude hiding (link)
 import qualified Text.Blaze.Html.Renderer.Text as Blaze
 
 -- | output can be native pandoc, or text that replaces or inserts into the output code block.
@@ -53,43 +50,43 @@ type OutputMap = Map Text Output
 -- >>> para "hello"
 -- Para [Str "hello"]
 para :: Text -> Block
-para = Para . fmap (Str . Text.unpack) . Text.lines
+para = Para . fmap (Str) . Text.lines
 
 -- | turn text into a Pandoc Plain Block
 -- >>> plain "hello"
 -- Plain [Str "hello"]
 plain :: Text -> Block
-plain = Plain . fmap (Str . Text.unpack) . Text.lines
+plain = Plain . fmap (Str) . Text.lines
 
 -- |
 -- >>> inline "two\nlines"
 -- [Str "two",Str "lines"]
 inline :: Text -> [Inline]
-inline = fmap (Str . Text.unpack) . Text.lines
+inline = fmap (Str) . Text.lines
 
 -- | create a link
 -- >>> link "test" "link"
 -- Link ("",[],[]) [Str "test"] ("link","")
 link :: Text -> Text -> Inline
-link name url = Link ("", [], []) [Str (Text.unpack name)] (Text.unpack url, "")
+link name url = Link ("", [], []) [Str (name)] (url, "")
 
 -- | create a link
 -- >>> linkTooltip "test" "link" "tooltip"
 -- Link ("",[],[]) [Str "test"] ("link","tooltip")
 linkTooltip :: Text -> Text -> Text -> Inline
-linkTooltip name url tooltip = Link ("", [], []) [Str (Text.unpack name)] (Text.unpack url, Text.unpack tooltip)
+linkTooltip name url tooltip = Link ("", [], []) [Str (name)] (url, tooltip)
 
 -- | create an image link
 -- >>> image "test" "imagelink.svg"
 -- Image ("",[],[]) [Str "test"] ("imagelink.svg","")
 image :: Text -> Text -> Inline
-image name url = Image ("", [], []) [Str (Text.unpack name)] (Text.unpack url, "")
+image name url = Image ("", [], []) [Str (name)] (url, "")
 
 -- | create a badge link
 -- >>> badge "Build Status" "https://travis-ci.org/tonyday567/readme-lhs.svg" "https://travis-ci.org/tonyday567/readme-lhs"
 -- Link ("",[],[]) [Image ("",[],[]) [Str "Build Status"] ("https://travis-ci.org/tonyday567/readme-lhs.svg","")] ("https://travis-ci.org/tonyday567/readme-lhs","")
 badge :: Text -> Text -> Text -> Inline
-badge label badge' url = Link ("", [], []) [Image ("", [], []) [Str (Text.unpack label)] (Text.unpack badge', "")] (Text.unpack url, "")
+badge label badge' url = Link ("", [], []) [Image ("", [], []) [Str (label)] (badge', "")] (url, "")
 
 -- | create a table from text
 -- >>> table "an example table" ["first column", "second column"] [AlignLeft, AlignRight] [0,0] [["first row", "1"], ["second row", "1000"]]
@@ -120,7 +117,7 @@ table' caption hs as ws rs =
 -- CodeBlock ("name",["sourceCode","literate","haskell"],[]) "x = 1\n"
 code :: Text -> [Text] -> Text -> Block
 code name classes =
-  CodeBlock (Text.unpack name, Text.unpack <$> classes, []) . Text.unpack
+  CodeBlock (name, classes, [])
 
 -- | use LHS when you want to just add output to a *.lhs
 -- | use GitHubMarkdown for rendering code and results on github
@@ -156,11 +153,11 @@ tweakHaskellCodeBlock x = x
 readPandoc :: FilePath -> Flavour -> IO (Either PandocError Pandoc)
 readPandoc fp f = do
   t <- liftIO $ readFile fp
-  runIO $ readMarkdown (def :: ReaderOptions) {readerExtensions = exts f} (Text.pack t)
+  runIO $ readMarkdown (def :: ReaderOptions) {readerExtensions = exts f} t
 
 -- | render a pandoc AST
 -- >>> renderMarkdown GitHubMarkdown (Pandoc mempty [Table [] [] [] [] [[[Para [Str "1"]],[Para [Str "2"]]]]])
--- Right "|     |     |\n|-----|-----|\n| 1   | 2   |"
+-- Right "|     |     |\n|-----|-----|\n| 1   | 2   |\n"
 renderMarkdown :: Flavour -> Pandoc -> Either PandocError Text
 renderMarkdown f (Pandoc meta bs) =
   runPure $
@@ -194,19 +191,16 @@ insertOutput m b = case b of
               maybe
                 [CodeBlock (id', classes, kv) mempty]
                 ( \case
-                    Fence t -> [CodeBlock (id', classes, kv) . Text.unpack $ t]
+                    Fence t -> [CodeBlock (id', classes, kv) t]
                     Replace t -> [plain t]
                     Native bs -> bs
                 )
                 (Map.lookup x m)
           )
-          (headMaybe . Prelude.filter ((`elem` classes) . Text.unpack) . Map.keys $ m)
+          (headMay . Protolude.filter ((`elem` classes)) . Map.keys $ m)
       )
       ("output" `elem` classes)
   b' -> [b']
-  where
-    headMaybe [] = Nothing
-    headMaybe (x : _) = Just x
 
 insertOutputs :: OutputMap -> Pandoc -> Pandoc
 insertOutputs out (Pandoc meta bs) =
