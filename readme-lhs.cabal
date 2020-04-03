@@ -1,6 +1,6 @@
 cabal-version: 2.4
 name:           readme-lhs
-version:        0.4.0
+version:        0.5.0
 synopsis:       See readme.md
 description:    See readme.md for description.
 category:       Development
