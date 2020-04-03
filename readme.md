@@ -12,7 +12,7 @@ example insert
 Simple example of an output
 ```
 
-See [batteries](https://tonyday567.github.io/batteries) for a full
+See [batteries](https://github.com/tonyday567/batteries) for a full
 workout.
 
 template

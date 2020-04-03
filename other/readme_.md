@@ -11,7 +11,7 @@ example insert
 ``` {.output .example}
 ```
 
-See [batteries](https://tonyday567.github.io/batteries) for a full workout.
+See [batteries](https://github.com/tonyday567/batteries) for a full workout.
 
 
 template
