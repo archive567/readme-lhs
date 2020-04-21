@@ -6,6 +6,7 @@
 module Readme.Lhs
   ( para,
     plain,
+    inline,
     table,
     table',
     code,
