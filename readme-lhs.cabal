@@ -1,6 +1,6 @@
-cabal-version: 2.4
+cabal-version: 3.0
 name:           readme-lhs
-version:        0.5.0
+version:        0.6.0
 synopsis:       See readme.md
 description:    See readme.md for description.
 category:       Development
@@ -38,7 +38,7 @@ library
     , attoparsec
     , blaze-html
     , foldl
-    , protolude
+    , protolude >= 0.3 && < 0.4
     , text
     , pandoc
     , pandoc-types
@@ -58,7 +58,7 @@ executable readme-lhs-example
   ghc-options: -funbox-strict-fields -fforce-recomp -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , protolude
+    , protolude >= 0.3 && < 0.4
     , readme-lhs
     , text
 

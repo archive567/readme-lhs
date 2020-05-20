@@ -12,5 +12,6 @@ import Readme.Lhs
 
 main :: IO ()
 main =
-  void $ runOutput ("other/readme_.md", GitHubMarkdown) ("readme.md", GitHubMarkdown) $ do
-    output "example" (Fence "Simple example of an output")
+  void $
+  runOutput ("other/readme_.md", GitHubMarkdown) ("readme.md", GitHubMarkdown) $
+  output "example" (Fence "Simple example of an output")
