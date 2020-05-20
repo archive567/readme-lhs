@@ -50,7 +50,7 @@ script:
 - |
   case "$BUILD" in
     cabal)
-      cabal build all
+      travis_wait cabal build all
       ;;
     stack)
       stack --no-terminal $ARGS test --haddock --no-haddock-deps
