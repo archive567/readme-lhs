@@ -25,3 +25,8 @@ php-style fenced code blocks
 
 ``` {.output .test1}
 ```
+
+raw html
+
+<div><br><p>I am raw Html</p></div>
+

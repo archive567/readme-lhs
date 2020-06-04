@@ -14,6 +14,8 @@ module Readme.Convert
     printLhs,
     parse,
     print,
+    lhs2hs,
+    hs2lhs
   )
 where
 
@@ -80,20 +82,20 @@ printLhs ss =
     lit [] = [""]
     lit [""] = [""]
     lit xs =
-      (if Protolude.head xs == Just "" then [] else [""])
+      bool [""] [] (Protolude.head xs == Just "")
         <> xs
-        <> (if List.last xs == "" then [] else [""])
+        <> bool [""] [] (List.last xs == "")
 
 -- coming from hs
 -- normal code (.hs) is parsed where lines that are continuation of a section (neither contain clues as to whether code or comment) are output as Nothing, and the clues as to what the current and next section are is encoded as Just (current, next).
 normal :: Text.Parser (Maybe (Section, Section), [Text])
 normal =
   -- Nothing represents a continuation of previous section
-  (\_ -> (Nothing, [""])) <$> Text.endOfInput
+  (Nothing, [""]) <$ Text.endOfInput
     <|>
     -- exact matches include line removal
-    (\_ -> (Just (Comment, Comment), [])) <$> ("{-" *> Text.endOfInput)
-    <|> (\_ -> (Just (Comment, Code), [])) <$> ("-}" *> Text.endOfInput)
+    (Just (Comment, Comment), []) <$ ("{-" *> Text.endOfInput)
+    <|> (Just (Comment, Code), []) <$ ("-}" *> Text.endOfInput)
     <|>
     -- single line braced
     (\x -> (Just (Code, Code), ["{-" <> x <> "-}"]))
@@ -121,13 +123,13 @@ parseHs text = L.fold (L.Fold step begin done) $ Text.parseOnly normal <$> text
     step x (Left _) = x
     step (Block s ts, out) (Right (Just (this, next), ts')) =
       if
-        | ts <> ts' == [] -> (Block next [], out)
+        | null (ts <> ts') -> (Block next [], out)
         | this == s && next == s -> (Block s (ts <> ts'), out)
         | this /= s -> (Block this ts', out <> [Block s ts])
         | otherwise -> (Block next [], out <> [Block s (ts <> ts')])
     step (Block s ts, out) (Right (Nothing, ts')) =
       if
-        | ts <> ts' == [] -> (Block s [], out)
+        | null (ts <> ts') -> (Block s [], out)
         | otherwise -> (Block s (ts <> ts'), out)
 
 printHs :: [Block] -> [Text]
@@ -150,3 +152,13 @@ print Hs f = printHs f
 parse :: Format -> [Text] -> [Block]
 parse Lhs f = parseLhs f
 parse Hs f = parseHs f
+
+lhs2hs :: FilePath -> IO ()
+lhs2hs fp = do
+  t <- readFile (fp <> ".lhs")
+  writeFile (fp <> ".hs") $ unlines $ print Hs $ parse Lhs $ lines t
+
+hs2lhs :: FilePath -> IO ()
+hs2lhs fp = do
+  t <- readFile (fp <> ".hs")
+  writeFile (fp <> ".lhs") $ unlines $ print Lhs $ parse Hs $ lines t

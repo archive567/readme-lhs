@@ -39,8 +39,8 @@ import Text.Pandoc.Definition
 import Protolude hiding (link)
 import qualified Text.Blaze.Html.Renderer.Text as Blaze
 
--- | output can be native pandoc, or text that replaces or inserts into the output code block.
-data Output = Native [Block] | Replace Text | Fence Text
+-- | output can be native pandoc, text that replaces or inserts into the output code block, or Html.
+data Output = Native [Block] | Replace Text | Fence Text | RawHtml Text
 
 type OutputMap = Map Text Output
 
@@ -195,6 +195,7 @@ insertOutput m b = case b of
                     Fence t -> [CodeBlock (id', classes, kv) t]
                     Replace t -> [plain t]
                     Native bs -> bs
+                    RawHtml h -> [RawBlock (Format "html") h]
                 )
                 (Map.lookup x m)
           )
