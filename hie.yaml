@@ -1,0 +1,8 @@
+cradle:
+  stack:
+    - path: "./src/"
+      component: "readme-lhs:lib"
+    - path: "./other/example.hs"
+      component: "readme-lhs:exe:example"
+    - path: "./test/"
+      component: "readme-lhs:test"

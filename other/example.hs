@@ -7,7 +7,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleInstances #-}
 
-import Protolude
+import NumHask.Prelude
 import Readme.Lhs
 
 main :: IO ()

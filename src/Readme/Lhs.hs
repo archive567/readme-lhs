@@ -8,7 +8,6 @@ module Readme.Lhs
     plain,
     inline,
     table,
-    table',
     code,
     link,
     linkTooltip,
@@ -30,13 +29,10 @@ module Readme.Lhs
   )
 where
 
-import Control.Monad.IO.Class
 import qualified Data.Map as Map
-import Data.Text as Text
-import qualified Data.Text.IO as Text
 import Text.Pandoc
 import Text.Pandoc.Definition
-import Protolude hiding (link)
+import NumHask.Prelude hiding (link)
 import qualified Text.Blaze.Html.Renderer.Text as Blaze
 
 -- | output can be native pandoc, text that replaces or inserts into the output code block, or Html.
@@ -44,74 +40,73 @@ data Output = Native [Block] | Replace Text | Fence Text | RawHtml Text
 
 type OutputMap = Map Text Output
 
--- | doctest
+-- $setup
 -- >>> :set -XOverloadedStrings
+-- >>> let table1 = Table ("",[],[]) (Caption Nothing [Plain [Str "an example table"]]) [(AlignLeft,ColWidthDefault),(AlignRight,ColWidthDefault)] (TableHead ("",[],[]) [Row ("",[],[]) [Cell ("",[],[]) AlignLeft (RowSpan 1) (ColSpan 1) [Plain [Str "first column"]]],Row ("",[],[]) [Cell ("",[],[]) AlignRight (RowSpan 1) (ColSpan 1) [Plain [Str "second column"]]]]) [TableBody ("",[],[]) (RowHeadColumns 0) [] [Row ("",[],[]) [Cell ("",[],[]) AlignLeft (RowSpan 1) (ColSpan 1) [Plain [Str "first row"]]],Row ("",[],[]) [Cell ("",[],[]) AlignLeft (RowSpan 1) (ColSpan 1) [Plain [Str "1"]]]],TableBody ("",[],[]) (RowHeadColumns 0) [] [Row ("",[],[]) [Cell ("",[],[]) AlignRight (RowSpan 1) (ColSpan 1) [Plain [Str "second row"]]],Row ("",[],[]) [Cell ("",[],[]) AlignRight (RowSpan 1) (ColSpan 1) [Plain [Str "1000"]]]]] (TableFoot ("",[],[]) [])
 
 -- | turn text into a Pandoc Paragraph Block
 -- >>> para "hello"
 -- Para [Str "hello"]
 para :: Text -> Block
-para = Para . fmap (Str) . Text.lines
+para = Para . fmap Str . lines
 
 -- | turn text into a Pandoc Plain Block
 -- >>> plain "hello"
 -- Plain [Str "hello"]
 plain :: Text -> Block
-plain = Plain . fmap (Str) . Text.lines
+plain = Plain . fmap Str . lines
 
 -- |
 -- >>> inline "two\nlines"
 -- [Str "two",Str "lines"]
 inline :: Text -> [Inline]
-inline = fmap (Str) . Text.lines
+inline = fmap Str . lines
 
 -- | create a link
 -- >>> link "test" "link"
 -- Link ("",[],[]) [Str "test"] ("link","")
 link :: Text -> Text -> Inline
-link name url = Link ("", [], []) [Str (name)] (url, "")
+link name url = Link ("", [], []) [Str name] (url, "")
 
 -- | create a link
 -- >>> linkTooltip "test" "link" "tooltip"
 -- Link ("",[],[]) [Str "test"] ("link","tooltip")
 linkTooltip :: Text -> Text -> Text -> Inline
-linkTooltip name url tooltip = Link ("", [], []) [Str (name)] (url, tooltip)
+linkTooltip name url tooltip = Link ("", [], []) [Str name] (url, tooltip)
 
 -- | create an image link
 -- >>> image "test" "imagelink.svg"
 -- Image ("",[],[]) [Str "test"] ("imagelink.svg","")
 image :: Text -> Text -> Inline
-image name url = Image ("", [], []) [Str (name)] (url, "")
+image name url = Image ("", [], []) [Str name] (url, "")
 
 -- | create a badge link
 -- >>> badge "Build Status" "https://travis-ci.org/tonyday567/readme-lhs.svg" "https://travis-ci.org/tonyday567/readme-lhs"
 -- Link ("",[],[]) [Image ("",[],[]) [Str "Build Status"] ("https://travis-ci.org/tonyday567/readme-lhs.svg","")] ("https://travis-ci.org/tonyday567/readme-lhs","")
 badge :: Text -> Text -> Text -> Inline
-badge label badge' url = Link ("", [], []) [Image ("", [], []) [Str (label)] (badge', "")] (url, "")
+badge label badge' url = Link ("", [], []) [Image ("", [], []) [Str label] (badge', "")] (url, "")
 
--- | create a table from text
--- >>> table "an example table" ["first column", "second column"] [AlignLeft, AlignRight] [0,0] [["first row", "1"], ["second row", "1000"]]
--- Table [Str "an example table"] [AlignLeft,AlignRight] [0.0,0.0] [[Para [Str "first column"]],[Para [Str "second column"]]] [[[Para [Str "first row"]],[Para [Str "1"]]],[[Para [Str "second row"]],[Para [Str "1000"]]]]
-table :: Text -> [Text] -> [Alignment] -> [Int] -> [[Text]] -> Block
-table caption hs as ws rs =
-  Table
-    (inline caption)
-    as
-    (fromIntegral <$> ws)
-    ((: []) . para <$> hs)
-    (fmap ((: []) . para) <$> rs)
+-- | create a simple table from Inlines
+-- >>> table "an example table" [(Str "first column"), (Str "second column")] [AlignLeft, AlignRight] [ColWidthDefault, ColWidthDefault] [[(Str "first row"), (Str "1")], [(Str "second row"), (Str "1000")]]
+-- Table ("",[],[]) (Caption Nothing [Plain [Str "an example table"]]) [(AlignLeft,ColWidthDefault),(AlignRight,ColWidthDefault)] (TableHead ("",[],[]) [Row ("",[],[]) [Cell ("",[],[]) AlignLeft (RowSpan 1) (ColSpan 1) [Plain [Str "first column"]]],Row ("",[],[]) [Cell ("",[],[]) AlignRight (RowSpan 1) (ColSpan 1) [Plain [Str "second column"]]]]) [TableBody ("",[],[]) (RowHeadColumns 0) [] [Row ("",[],[]) [Cell ("",[],[]) AlignLeft (RowSpan 1) (ColSpan 1) [Plain [Str "first row"]]],Row ("",[],[]) [Cell ("",[],[]) AlignLeft (RowSpan 1) (ColSpan 1) [Plain [Str "1"]]]],TableBody ("",[],[]) (RowHeadColumns 0) [] [Row ("",[],[]) [Cell ("",[],[]) AlignRight (RowSpan 1) (ColSpan 1) [Plain [Str "second row"]]],Row ("",[],[]) [Cell ("",[],[]) AlignRight (RowSpan 1) (ColSpan 1) [Plain [Str "1000"]]]]] (TableFoot ("",[],[]) [])
+table :: Text -> [Inline] -> [Alignment] -> [ColWidth] -> [[Inline]] -> Block
+table c hs as ws rs = Table nullAttr (caption c) (zip as ws) (thead as hs) (zipWith tbody as rs) nullTfoot
 
--- | create a table from inlines
--- >>> table' "an example table" [Str "first column", Str "second column"] [AlignLeft, AlignRight] [0,0] [[Str "first row", Str "1"], [Str "second row", Str "1000"]]
--- Table [Str "an example table"] [AlignLeft,AlignRight] [0.0,0.0] [[Para [Str "first column"]],[Para [Str "second column"]]] [[[Para [Str "first row"]],[Para [Str "1"]]],[[Para [Str "second row"]],[Para [Str "1000"]]]]
-table' :: Text -> [Inline] -> [Alignment] -> [Int] -> [[Inline]] -> Block
-table' caption hs as ws rs =
-  Table
-    (inline caption)
-    as
-    (fromIntegral <$> ws)
-    ((: []) . Para . (: []) <$> hs)
-    (fmap ((: []) . Para . (: [])) <$> rs)
+caption :: Text -> Caption
+caption t = Caption Nothing [Plain [Str t]]
+
+cell :: Alignment -> Inline -> Cell
+cell a i = Cell nullAttr a (RowSpan 1) (ColSpan 1) [Plain [i]]
+
+thead :: [Alignment] -> [Inline] -> TableHead
+thead as xs = TableHead nullAttr (zipWith (\a i -> Row nullAttr [cell a i]) as xs)
+
+nullTfoot :: TableFoot
+nullTfoot = TableFoot nullAttr []
+
+tbody :: Alignment -> [Inline] -> TableBody
+tbody a xs = TableBody nullAttr (RowHeadColumns 0) [] (Row nullAttr . (:[]) . (cell a) <$> xs)
+
 
 -- | code identifier classes text
 -- >>> code "name" ["sourceCode", "literate", "haskell"] "x = 1\n"
@@ -157,8 +152,9 @@ readPandoc fp f = do
   runIO $ readMarkdown (def :: ReaderOptions) {readerExtensions = exts f} t
 
 -- | render a pandoc AST
--- >>> renderMarkdown GitHubMarkdown (Pandoc mempty [Table [] [] [] [] [[[Para [Str "1"]],[Para [Str "2"]]]]])
--- Right "|     |     |\n|-----|-----|\n| 1   | 2   |\n"
+-- >>>
+-- >>> renderMarkdown GitHubMarkdown (Pandoc mempty [table1])
+-- Right "| first column  |     |\n|:--------------|----:|\n| second column |     |\n| first row     |     |\n| 1             |     |\n| second row    |     |\n| 1000          |     |\n"
 renderMarkdown :: Flavour -> Pandoc -> Either PandocError Text
 renderMarkdown f (Pandoc meta bs) =
   runPure $
@@ -166,12 +162,10 @@ renderMarkdown f (Pandoc meta bs) =
       (def :: WriterOptions) {writerExtensions = exts f}
       (Pandoc meta (tweakHaskellCodeBlock <$> bs))
 
--- Blaze.renderHtml <$> (runPure $ writeHtml5 (def {writerExtensions = enableExtension Ext_multiline_tables (getDefaultExtensions "html")}) (Pandoc mempty [Table [Str "test"] [AlignLeft,AlignLeft] [0.0,0.0] [[Plain [Str "first",Space,Str "column"]],[Plain [Str "second",Space,Str "column"]]] [[[Plain [Str "1"]]  ,[Plain [Str "2"]]] ,[[Plain [Str "3"]]  ,[Plain [Str "4"]]]]]
-
 -- | render a pandoc AST to Html
 -- Note that text align for a Table cannot be blank when rendering to html
--- >>> Blaze.renderHtml <$> (runPure $ writeHtml5 (def {writerExtensions = (getDefaultExtensions "html")}) (Pandoc mempty [Table [] [AlignLeft,AlignLeft] [] [] [[[Plain [Str "1"]]  ,[Plain [Str "2"]]]]]))
--- Right "<table>\n<tbody>\n<tr class=\"odd\">\n<td style=\"text-align: left;\">1</td>\n<td style=\"text-align: left;\">2</td>\n</tr>\n</tbody>\n</table>"
+-- >>> Blaze.renderHtml <$> (runPure $ writeHtml5 (def {writerExtensions = (getDefaultExtensions "html")}) (Pandoc mempty [table1]))
+-- Right "<table>\n<caption>an example table</caption>\n<thead>\n<tr class=\"header\">\n<th style=\"text-align: left;\">first column</th>\n<th style=\"text-align: right;\"></th>\n</tr>\n</thead>\n<tbody>\n<tr class=\"odd\">\n<td style=\"text-align: left;\">second column</td>\n<td style=\"text-align: right;\"></td>\n</tr>\n<tr class=\"even\">\n<td style=\"text-align: left;\">first row</td>\n<td style=\"text-align: right;\"></td>\n</tr>\n<tr class=\"odd\">\n<td style=\"text-align: left;\">1</td>\n<td style=\"text-align: right;\"></td>\n</tr>\n<tr class=\"even\">\n<td style=\"text-align: left;\">second row</td>\n<td style=\"text-align: right;\"></td>\n</tr>\n<tr class=\"odd\">\n<td style=\"text-align: left;\">1000</td>\n<td style=\"text-align: right;\"></td>\n</tr>\n</tbody>\n</table>"
 --
 renderHtml :: Flavour -> Pandoc -> Either PandocError Text
 renderHtml f (Pandoc meta bs) =
@@ -199,7 +193,7 @@ insertOutput m b = case b of
                 )
                 (Map.lookup x m)
           )
-          (headMay . Protolude.filter ((`elem` classes)) . Map.keys $ m)
+          (headMay . filter (`elem` classes) . Map.keys $ m)
       )
       ("output" `elem` classes)
   b' -> [b']
@@ -226,5 +220,5 @@ runOutput (fi, flavi) (fo, flavo) out = do
         case flavo of
           Html -> renderHtml flavo p'
           _ -> renderMarkdown flavo p'
-  either (pure . Left) (\t -> Text.writeFile fo t >> pure (Right ())) w
+  either (pure . Left) (\t -> writeFile fo t >> pure (Right ())) w
 

@@ -20,24 +20,23 @@ module Readme.Convert
 where
 
 import qualified Control.Foldl as L
-import qualified Data.Attoparsec.Text as Text
+import qualified Data.Attoparsec.Text as A
 import qualified Data.List as List
-import qualified Data.Text as Text
-import Protolude hiding (print)
+import NumHask.Prelude hiding (print)
 
 data Section = Code | Comment deriving (Show, Eq)
 
 data Block = Block Section [Text] deriving (Show, Eq)
 
 -- starting with .lhs bird style
-bird :: Text.Parser Block
+bird :: A.Parser Block
 bird =
-  (\x -> Block Code [x]) <$> ("> " *> Text.takeText)
-    <|> (\_ -> Block Code [""]) <$> (">" *> Text.takeText)
-    <|> (\x -> Block Comment [x]) <$> Text.takeText
+  (\x -> Block Code [x]) <$> ("> " *> A.takeText)
+    <|> (\_ -> Block Code [""]) <$> (">" *> A.takeText)
+    <|> (\x -> Block Comment [x]) <$> A.takeText
 
 parseLhs :: [Text] -> [Block]
-parseLhs text = L.fold (L.Fold step begin done) $ Text.parseOnly bird <$> text
+parseLhs text = L.fold (L.Fold step begin done) $ A.parseOnly bird <$> text
   where
     begin = (Block Code [], [])
     done (Block _ [], out) = unlit' out
@@ -60,18 +59,18 @@ parseLhs text = L.fold (L.Fold step begin done) $ Text.parseOnly bird <$> text
     unlit [""] = [""]
     unlit xs =
       if
-        | (Protolude.head xs == Just "") && (Protolude.head (reverse xs) == Just "") ->
+        | (head xs == Just "") && (head (reverse xs) == Just "") ->
           List.init $ List.tail xs
-        | (Protolude.head xs == Just "") ->
+        | (head xs == Just "") ->
           List.tail xs
-        | (Protolude.head (reverse xs) == Just "") ->
+        | (head (reverse xs) == Just "") ->
           List.init xs
         | otherwise ->
           xs
 
 printLhs :: [Block] -> [Text]
 printLhs ss =
-  Protolude.mconcat $
+  mconcat $
     ( \(Block s ts) ->
         case s of
           Code -> ("> " <>) <$> ts
@@ -82,40 +81,40 @@ printLhs ss =
     lit [] = [""]
     lit [""] = [""]
     lit xs =
-      bool [""] [] (Protolude.head xs == Just "")
+      bool [""] [] (head xs == Just "")
         <> xs
         <> bool [""] [] (List.last xs == "")
 
 -- coming from hs
 -- normal code (.hs) is parsed where lines that are continuation of a section (neither contain clues as to whether code or comment) are output as Nothing, and the clues as to what the current and next section are is encoded as Just (current, next).
-normal :: Text.Parser (Maybe (Section, Section), [Text])
+normal :: A.Parser (Maybe (Section, Section), [Text])
 normal =
   -- Nothing represents a continuation of previous section
-  (Nothing, [""]) <$ Text.endOfInput
+  (Nothing, [""]) <$ A.endOfInput
     <|>
     -- exact matches include line removal
-    (Just (Comment, Comment), []) <$ ("{-" *> Text.endOfInput)
-    <|> (Just (Comment, Code), []) <$ ("-}" *> Text.endOfInput)
+    (Just (Comment, Comment), []) <$ ("{-" *> A.endOfInput)
+    <|> (Just (Comment, Code), []) <$ ("-}" *> A.endOfInput)
     <|>
     -- single line braced
     (\x -> (Just (Code, Code), ["{-" <> x <> "-}"]))
-      <$> ("{-" *> (Text.pack <$> Text.manyTill' Text.anyChar "-}"))
+      <$> ("{-" *> (pack <$> A.manyTill' A.anyChar "-}"))
     <|>
     -- pragmas
-    (\x -> (Just (Code, Code), ["{-#" <> x])) <$> ("{-#" *> Text.takeText)
-    <|> (\x -> (Just (Code, Code), [x])) <$> (Text.pack <$> Text.manyTill' Text.anyChar "#-}")
+    (\x -> (Just (Code, Code), ["{-#" <> x])) <$> ("{-#" *> A.takeText)
+    <|> (\x -> (Just (Code, Code), [x])) <$> (pack <$> A.manyTill' A.anyChar "#-}")
     <|>
     -- braced start of multi-line comment (brace is stripped)
-    (\x -> (Just (Comment, Comment), [x])) <$> ("{-" *> Text.takeText)
+    (\x -> (Just (Comment, Comment), [x])) <$> ("{-" *> A.takeText)
     <|>
     -- braced end of multi-line comment (brace is stripped)
-    (\x -> (Just (Comment, Code), [x])) <$> (Text.pack <$> Text.manyTill' Text.anyChar "-}")
+    (\x -> (Just (Comment, Code), [x])) <$> (pack <$> A.manyTill' A.anyChar "-}")
     <|>
     -- everything else a continuation and verbatim
-    (\x -> (Nothing, [x])) <$> Text.takeText
+    (\x -> (Nothing, [x])) <$> A.takeText
 
 parseHs :: [Text] -> [Block]
-parseHs text = L.fold (L.Fold step begin done) $ Text.parseOnly normal <$> text
+parseHs text = L.fold (L.Fold step begin done) $ A.parseOnly normal <$> text
   where
     begin = (Block Code [], [])
     done (Block _ [], out) = out
@@ -134,7 +133,7 @@ parseHs text = L.fold (L.Fold step begin done) $ Text.parseOnly normal <$> text
 
 printHs :: [Block] -> [Text]
 printHs ss =
-  Protolude.mconcat $
+  mconcat $
     ( \(Block s ts) ->
         case s of
           Code -> ts

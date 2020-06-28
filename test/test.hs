@@ -27,6 +27,5 @@ main :: IO ()
 main =
   doctest
   [ "src/Readme/Lhs.hs"
---  , "other/example.hs"
   , "test/test.hs"]
 
