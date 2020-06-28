@@ -13,10 +13,16 @@ stack build --test --exec "$(stack path --local-install-root)/bin/{{name}}" --fi
 
 {-# START_FILE app/{{name}}.hs #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RebindableSyntax #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wall #-}
 
@@ -25,13 +31,13 @@ import NumHask.Prelude
 main :: IO ()
 main = do
   let n = 10
-  let answer = product [1..n::Integer]
+  let answer = 1 + product [1..n::Integer]
   print answer
 
 {-# START_FILE {{name}}.cabal #-}
-cabal-version: 3.0
-name: {{name}}
-version: 0.0.1
+cabal-version: 2.4
+name:          {{name}}
+version:       0.0.1
 synopsis: See readme.md
 description: See readme.md for description.
 category: project
@@ -49,6 +55,10 @@ source-repository head
 executable {{name}}
   main-is: {{name}}.hs
   hs-source-dirs: app
+  build-depends:
+    base >= 4.7 && < 5,
+    numhask-prelude >= 0.6
+  default-language: Haskell2010
   default-extensions:
     NegativeLiterals
     NoImplicitPrelude
@@ -60,15 +70,13 @@ executable {{name}}
     -threaded
     -rtsopts
     -with-rtsopts=-N
-  build-depends:
-      base >= 4.7 && < 5
-    , protolude >= 0.3.0 && < 0.4
-  default-language: Haskell2010
 
 {-# START_FILE .gitignore #-}
 /.stack-work/
 /dist-newstyle/
 TAGS
+
+{-# START_FILE .projectile #-}
 
 {-# START_FILE .gitattributes #-}
 other/* linguist-documentation
@@ -107,59 +115,31 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 {-# START_FILE .travis.yml #-}
-language: haskell
-dist: trusty
+language: generic
 
 cache:
   directories:
   - $HOME/.stack
   - $TRAVIS_BUILD_DIR/.stack-work
-  - $TRAVIS_BUILD_DIR/dist-newstyle
-
-cabal: "3.0"
 
 matrix:
   include:
-    - env: BUILD=cabal
-      ghc: "8.8.3"
-    - env: BUILD=stack ARGS="--system-ghc"
-      ghc: "8.8.3"
+    - env: BUILD=stack
       # a -Werror build that is allowed to fail
-    - env: BUILD=werror ARGS="--system-ghc"
-      ghc: "8.8.3"
-    - env: BUILD=stack ARGS="--resolver nightly --system-ghc"
-      ghc: "8.8.3"
+    - env: BUILD=werror
 
   allow_failures:
-    - env: BUILD=stack ARGS="--resolver nightly --system-ghc"
-    - env: BUILD=werror ARGS="--system-ghc"
+    - env: BUILD=werror
 
 install:
 - |
-  case "$BUILD" in
-    cabal)
-      cabal --version
-      ghc --version
-      ;;
-    stack|werror)
-      ghc --version
       PATH=$HOME/.local/bin:$PATH
       mkdir -p ~/.local/bin
-      if [ `uname` = "Darwin" ]
-      then
-        travis_retry curl --insecure -L https://get.haskellstack.org/stable/osx-x86_64.tar.gz | tar xz --strip-components=1 --include '*/stack' -C ~/.local/bin
-      else
-        travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-      fi
-      ;;
-  esac
+      travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 
 script:
 - |
   case "$BUILD" in
-    cabal)
-      cabal build all
-      ;;
     stack)
       stack --no-terminal $ARGS test --haddock --no-haddock-deps
       ;;
@@ -169,10 +149,23 @@ script:
   esac
 
 {-# START_FILE stack.yaml #-}
-resolver: lts-15.13
+resolver: nightly-2020-06-25
 
 packages:
   - .
 
 extra-deps:
-  - protolude-0.3.0
+  - git: https://github.com/tonyday567/numhask-space
+    commit: 6525f5096525196fe367dabdfe596a7bd0c0aa6c
+  - git: https://github.com/tonyday567/numhask
+    commit: 37ee8dced120f60a511baa6bb6c7ac382b1e8827
+    subdir: numhask-prelude
+  - git: https://github.com/tonyday567/numhask
+    commit: 37ee8dced120f60a511baa6bb6c7ac382b1e8827
+    subdir: numhask
+
+{-# START_FILE hie.yaml #-}
+cradle:
+  stack:
+    - path: "./app/{{name}}.hs"
+      component: "{{name}}:exe:{{name}}"
