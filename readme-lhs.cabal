@@ -43,11 +43,14 @@ library
     numhask-prelude >= 0.6,
     pandoc >= 2.10,
     pandoc-types >= 1.21,
+    scientific >= 0.3,
+    tdigest >= 0.2,
     text >= 1.2,
     transformers >= 0.5
   exposed-modules:
-    Readme.Lhs,
     Readme.Convert
+    Readme.Format
+    Readme.Lhs
   other-modules:
   default-language: Haskell2010
 
