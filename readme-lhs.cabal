@@ -40,7 +40,7 @@ library
     blaze-html >= 0.9,
     containers >= 0.6,
     foldl >= 1.4,
-    numhask-prelude >= 0.6,
+    numhask >= 0.6 && < 0.7,
     pandoc >= 2.10,
     pandoc-types >= 1.21,
     scientific >= 0.3,
@@ -60,9 +60,9 @@ executable readme-lhs-example
     other
   build-depends:
     base >=4.7 && <5,
-    numhask-prelude >= 0.6,
+    numhask >= 0.6 && < 0.7,
     readme-lhs,
-    text
+    text >= 1.2
   default-language: Haskell2010
   default-extensions:
     NegativeLiterals
