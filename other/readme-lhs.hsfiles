@@ -8,7 +8,7 @@ flow
 ----
 
 ```
-stack build --test --exec "$(stack path --local-install-root)/bin/{{name}}" --file-watch
+stack build --test --file-watch
 ```
 
 {-# START_FILE app/{{name}}.hs #-}
@@ -29,10 +29,7 @@ stack build --test --exec "$(stack path --local-install-root)/bin/{{name}}" --fi
 import NumHask.Prelude
 
 main :: IO ()
-main = do
-  let n = 10
-  let answer = 1 + product [1..n::Integer]
-  print answer
+main = pure ()
 
 {-# START_FILE {{name}}.cabal #-}
 cabal-version: 2.4
@@ -52,12 +49,50 @@ source-repository head
   type: git
   location: https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}
 
+library
+  hs-source-dirs:
+    src
+  default-extensions:
+    NoImplicitPrelude
+    NegativeLiterals
+    OverloadedStrings
+    UnicodeSyntax
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+  build-depends:
+    base >=4.7 && <5,
+    box >= 0.6 && < 0.7,
+    box-csv >= 0.0.2 && < 0.1,
+    box-socket >= 0.0.2 && < 0.1,
+    chart-svg >= 0.1.2 && < 0.2,
+    concurrency >= 1.11,
+    foldl >= 1.4,
+    lucid,
+    lens,
+    numhask >= 0.6 && < 0.7,
+    numhask-array >= 0.7 && < 0.8,
+    numhask-space >= 0.6 && < 0.7,
+    perf >= 0.7 && < 0.8,
+    text >= 1.2 && < 1.3,
+    transformers >= 0.5 && < 0.6,
+    unordered-containers,
+    web-rep >= 0.7 && < 0.8,
+  exposed-modules:
+
+  other-modules:
+  default-language: Haskell2010
+
 executable {{name}}
   main-is: {{name}}.hs
   hs-source-dirs: app
   build-depends:
     base >= 4.7 && < 5,
-    numhask-prelude >= 0.6
+    numhask >= 0.6 && < 0.7,
+    {{name}}
   default-language: Haskell2010
   default-extensions:
     NegativeLiterals
@@ -71,10 +106,34 @@ executable {{name}}
     -rtsopts
     -with-rtsopts=-N
 
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: test.hs
+  hs-source-dirs:
+    test
+  build-depends:
+    base >=4.7 && <5,
+    doctest,
+    numhask >= 0.6 && < 0.7,
+    {{name}}
+  default-language: Haskell2010
+  default-extensions:
+    NoImplicitPrelude
+    NegativeLiterals
+    OverloadedStrings
+    UnicodeSyntax
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+
 {-# START_FILE .gitignore #-}
 /.stack-work/
 /dist-newstyle/
 TAGS
+stack.yaml.lock
 
 {-# START_FILE .projectile #-}
 
@@ -155,17 +214,42 @@ packages:
   - .
 
 extra-deps:
-  - git: https://github.com/tonyday567/numhask-space
-    commit: 6525f5096525196fe367dabdfe596a7bd0c0aa6c
-  - git: https://github.com/tonyday567/numhask
-    commit: 37ee8dced120f60a511baa6bb6c7ac382b1e8827
-    subdir: numhask-prelude
-  - git: https://github.com/tonyday567/numhask
-    commit: 37ee8dced120f60a511baa6bb6c7ac382b1e8827
-    subdir: numhask
+  - backprop-0.2.6.4
+  - box-0.6.0
+  - box-csv-0.0.2
+  - box-socket-0.0.2
+  - chart-svg-0.1.3
+  - chart-svg-various-0.0.2
+  - mealy-0.0.1
+  - numhask-0.6.0.2
+  - numhask-array-0.7.0
+  - numhask-space-0.6.0
+  - mealy-0.0.1
+  - perf-0.7.0
+  - vinyl-0.13.0
+  - web-rep-0.7.0
 
 {-# START_FILE hie.yaml #-}
 cradle:
   stack:
     - path: "./app/{{name}}.hs"
       component: "{{name}}:exe:{{name}}"
+    - path: "./src"
+      component: "{{name}}:lib"
+    - path: "./test/{{name}}.hs"
+      component: "{{name}}:test:{{name}}"
+
+{-# START_FILE test/test.hs #-}
+{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -fno-warn-unused-imports #-}
+
+module Main where
+
+import NumHask.Prelude
+import Test.DocTest
+
+main :: IO ()
+main =
+  doctest
+  [
+  ]
