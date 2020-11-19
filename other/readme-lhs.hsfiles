@@ -17,6 +17,7 @@ stack build --test --file-watch
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NegativeLiterals #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
@@ -53,10 +54,6 @@ library
   hs-source-dirs:
     src
   default-extensions:
-    NoImplicitPrelude
-    NegativeLiterals
-    OverloadedStrings
-    UnicodeSyntax
   ghc-options:
     -Wall
     -Wcompat
@@ -65,22 +62,10 @@ library
     -Wredundant-constraints
   build-depends:
     base >=4.7 && <5,
-    box >= 0.6 && < 0.7,
-    box-csv >= 0.0.2 && < 0.1,
-    box-socket >= 0.0.2 && < 0.1,
-    chart-svg >= 0.1.2 && < 0.2,
-    concurrency >= 1.11,
-    foldl >= 1.4,
-    lucid,
-    lens,
-    numhask >= 0.6 && < 0.7,
-    numhask-array >= 0.7 && < 0.8,
-    numhask-space >= 0.6 && < 0.7,
-    perf >= 0.7 && < 0.8,
+    lens >= 4 && < 5,
+    numhask >= 0.7 && < 0.8,
+    numhask-space >= 0.7 && < 0.8,
     text >= 1.2 && < 1.3,
-    transformers >= 0.5 && < 0.6,
-    unordered-containers,
-    web-rep >= 0.7 && < 0.8,
   exposed-modules:
 
   other-modules:
@@ -91,7 +76,7 @@ executable {{name}}
   hs-source-dirs: app
   build-depends:
     base >= 4.7 && < 5,
-    numhask >= 0.6 && < 0.7,
+    numhask >= 0.7 && < 0.8,
     {{name}}
   default-language: Haskell2010
   default-extensions:
@@ -114,7 +99,7 @@ test-suite test
   build-depends:
     base >=4.7 && <5,
     doctest,
-    numhask >= 0.6 && < 0.7,
+    numhask >= 0.7 && < 0.8,
     {{name}}
   default-language: Haskell2010
   default-extensions:
@@ -214,20 +199,8 @@ packages:
   - .
 
 extra-deps:
-  - backprop-0.2.6.4
-  - box-0.6.0
-  - box-csv-0.0.2
-  - box-socket-0.0.2
-  - chart-svg-0.1.3
-  - chart-svg-various-0.0.2
-  - mealy-0.0.1
-  - numhask-0.6.0.2
-  - numhask-array-0.7.0
-  - numhask-space-0.6.0
-  - mealy-0.0.1
-  - perf-0.7.0
-  - vinyl-0.13.0
-  - web-rep-0.7.0
+  - numhask-0.7.0.0
+  - numhask-space-0.7.0
 
 {-# START_FILE hie.yaml #-}
 cradle:
