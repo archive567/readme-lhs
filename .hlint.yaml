@@ -1,5 +1,6 @@
 - ignore: {name: Eta reduce}
 - ignore: {name: Use if}
+- ignore: {name: Use last}
 - ignore: {name: Redundant multi-way if}
 # To generate a suitable file for HLint do:
 # $ hlint --default > .hlint.yaml

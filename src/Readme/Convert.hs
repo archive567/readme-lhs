@@ -1,7 +1,10 @@
 {-# LANGUAGE MultiWayIf #-}
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RebindableSyntax #-}
 {-# OPTIONS_GHC -Wall #-}
 
+-- | Helpers for converting between lhs and hs files.
+--
 module Readme.Convert
   ( Section (..),
     Block (..),
@@ -24,17 +27,20 @@ import qualified Data.Attoparsec.Text as A
 import qualified Data.List as List
 import NumHask.Prelude hiding (print)
 
+-- | Type of file section
 data Section = Code | Comment deriving (Show, Eq)
 
+-- | A native section block.
 data Block = Block Section [Text] deriving (Show, Eq)
 
--- starting with .lhs bird style
+-- | *.lhs bird style
 bird :: A.Parser Block
 bird =
   (\x -> Block Code [x]) <$> ("> " *> A.takeText)
     <|> (\_ -> Block Code [""]) <$> (">" *> A.takeText)
     <|> (\x -> Block Comment [x]) <$> A.takeText
 
+-- | Parse an lhs-style block of text in
 parseLhs :: [Text] -> [Block]
 parseLhs text = L.fold (L.Fold step begin done) $ A.parseOnly bird <$> text
   where
@@ -68,6 +74,7 @@ parseLhs text = L.fold (L.Fold step begin done) $ A.parseOnly bird <$> text
         | otherwise ->
           xs
 
+-- | Convert a block of code into lhs.
 printLhs :: [Block] -> [Text]
 printLhs ss =
   mconcat $
@@ -85,8 +92,9 @@ printLhs ss =
         <> xs
         <> bool [""] [] (List.last xs == "")
 
--- coming from hs
--- normal code (.hs) is parsed where lines that are continuation of a section (neither contain clues as to whether code or comment) are output as Nothing, and the clues as to what the current and next section are is encoded as Just (current, next).
+-- | Parse a .hs
+--
+-- Normal code (.hs) is parsed where lines that are continuation of a section (neither contain clues as to whether code or comment) are output as Nothing, and the clues as to what the current and next section are is encoded as Just (current, next).
 normal :: A.Parser (Maybe (Section, Section), [Text])
 normal =
   -- Nothing represents a continuation of previous section
@@ -113,6 +121,7 @@ normal =
     -- everything else a continuation and verbatim
     (\x -> (Nothing, [x])) <$> A.takeText
 
+-- | Parse assuming a hs block of code
 parseHs :: [Text] -> [Block]
 parseHs text = L.fold (L.Fold step begin done) $ A.parseOnly normal <$> text
   where
@@ -131,6 +140,7 @@ parseHs text = L.fold (L.Fold step begin done) $ A.parseOnly normal <$> text
         | null (ts <> ts') -> (Block s [], out)
         | otherwise -> (Block s (ts <> ts'), out)
 
+-- | Print a block of code to hs style
 printHs :: [Block] -> [Text]
 printHs ss =
   mconcat $
@@ -141,22 +151,26 @@ printHs ss =
     )
       <$> ss
 
--- just in case there are ever other formats (YAML haskell anyone?)
+-- | just in case there are ever other formats (YAML haskell anyone?)
 data Format = Lhs | Hs
 
+-- | Print
 print :: Format -> [Block] -> [Text]
 print Lhs f = printLhs f
 print Hs f = printHs f
 
+-- | Parse
 parse :: Format -> [Text] -> [Block]
 parse Lhs f = parseLhs f
 parse Hs f = parseHs f
 
+-- | Convert a file from lhs to hs
 lhs2hs :: FilePath -> IO ()
 lhs2hs fp = do
   t <- readFile (fp <> ".lhs")
   writeFile (fp <> ".hs") $ unlines $ print Hs $ parse Lhs $ lines t
 
+-- | Convert a file from hs to lhs
 hs2lhs :: FilePath -> IO ()
 hs2lhs fp = do
   t <- readFile (fp <> ".hs")

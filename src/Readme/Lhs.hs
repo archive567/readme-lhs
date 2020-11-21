@@ -1,10 +1,13 @@
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
+-- | Help for inserting programming output into an lhs or md-style file.
 module Readme.Lhs
-  ( -- * restricted pandoc types
+  ( -- * Usage
+    -- $setup
+
+    -- * pandoc
     Flavour (..),
     readPandoc,
     renderPandoc,
@@ -41,6 +44,7 @@ import Text.Pandoc.Definition
 import Text.Pandoc.Builder as B
 
 -- $setup
+--
 -- >>> :set -XOverloadedStrings
 -- >>> import Readme.Lhs
 -- >>> import Text.Pandoc.Builder as B
@@ -51,8 +55,9 @@ import Text.Pandoc.Builder as B
 --   use GitHubMarkdown for rendering code and results on github
 --
 --   The main differences between LHS and GitHubMarkdown is that GitHubMarkdown parses bird tracks as a BlockQuote.
+--
 -- >>> readPandoc "test/test.md" GitHubMarkdown
--- Right (Pandoc (Meta {unMeta = fromList []}) [Para [Str "haskell",Space,Str "LHS",Space,Str "style"],CodeBlock ("",["sourceCode","literate","haskell"],[]) "",Para [Str "bird-tracks"],BlockQuote [Para [Str "import",Space,Str "Readme.Lhs"]],Para [Str "code",Space,Str "block"],CodeBlock ("",[],[]) "indented\nunfenced code",Para [Str "github-style",Space,Str "fenced",Space,Str "code",Space,Str "blocks"],CodeBlock ("",["haskell"],[]) "",Para [Code ("",[],[]) "output test1"],Para [Str "php-style",Space,Str "fenced",Space,Str "code",Space,Str "blocks"],CodeBlock ("",["output","test1"],[]) "",Para [Str "raw",Space,Str "html"],RawBlock (Format "html") "<div><br><p>I am raw Html</p></div>"])
+-- Right (Pandoc (Meta {unMeta = fromList []}) [Para [Str "haskell",Space,Str "LHS",Space,Str "style"],CodeBlock ("",["sourceCode","literate","haskell"],[]) "",Para [Str "bird-tracks"],BlockQuote [Para [Str "import",Space,Str "Readme.Lhs"]],Para [Str "code",Space,Str "block"],CodeBlock ("",[],[]) "indented\nunfenced code",Para [Str "github-style",Space,Str "fenced",Space,Str "code",Space,Str "blocks"],CodeBlock ("",["haskell"],[]) "",Para [Code ("",[],[]) "output test1"],Para [Str "php-style",Space,Str "fenced",Space,Str "code",Space,Str "blocks"],CodeBlock ("",["output","test1"],[]) "",Para [Str "raw",Space,Str "html"],RawBlock (Format "html") "<div>",Para [RawInline (Format "html") "<br>",RawInline (Format "html") "<p>",Str "I",Space,Str "am",Space,Str "raw",Space,Str "Html",RawInline (Format "html") "</p>",RawInline (Format "html") "</div>"]])
 --
 -- >>> readPandoc "test/test.md" LHS
 -- Right (Pandoc (Meta {unMeta = fromList []}) [Plain [Str "haskell",Space,Str "LHS",Space,Str "style",SoftBreak,Str "```{.sourceCode",Space,Str ".literate",Space,Str ".haskell}",SoftBreak,Str "```",SoftBreak,Str "bird-tracks",SoftBreak,Str ">",Space,Str "import",Space,Str "Readme.Lhs",SoftBreak,Str "code",Space,Str "block",SoftBreak,Str "indented",SoftBreak,Str "unfenced",Space,Str "code",SoftBreak,Str "github-style",Space,Str "fenced",Space,Str "code",Space,Str "blocks",SoftBreak,Str "```",Space,Str "haskell",SoftBreak,Str "```",SoftBreak,Str "```",Space,Str "output",Space,Str "test1",SoftBreak,Str "```",SoftBreak,Str "php-style",Space,Str "fenced",Space,Str "code",Space,Str "blocks",SoftBreak,Str "```",Space,Str "{.output",Space,Str ".test1}",SoftBreak,Str "```",SoftBreak,Str "raw",Space,Str "html"],Div ("",[],[]) [Plain [LineBreak],Para [Str "I",Space,Str "am",Space,Str "raw",Space,Str "Html"]]])
@@ -64,8 +69,9 @@ import Text.Pandoc.Builder as B
 -- True
 data Flavour = GitHubMarkdown | LHS | Html deriving (Eq, Show, Ord)
 
--- | exts LHS is equivalent to 'markdown+lhs'
--- exts GitHubMarkdown is equivalent to 'gfm'
+-- | @exts LHS@ is equivalent to @markdown+lhs@
+-- @exts GitHubMarkdown@ is equivalent to @gfm@
+-- @exts Html@ is equivalent to @html@
 exts :: Flavour -> Extensions
 exts LHS = enableExtension Ext_literate_haskell $ getDefaultExtensions "markdown"
 exts GitHubMarkdown =
@@ -103,7 +109,7 @@ readPandoc fp f
 -- | render a pandoc AST
 --
 -- >>> renderPandoc GitHubMarkdown (Pandoc mempty [table1])
--- Right "| first column | second column |\n|:-------------|--------------:|\n| first row    |             1 |\n| second row   |          1000 |\n"
+-- Right "| first column | second column |\n|:-------------|--------------:|\n| first row    |             1 |\n| second row   |          1000 |\n\nan example table\n"
 --
 -- >>> renderPandoc Html (Pandoc mempty [table1])
 -- Right "<table class=\"table table-bordered table-hover m-3\" style=\"width: 70%;\">\n<caption>an example table</caption>\n<thead>\n<tr class=\"header\">\n<th style=\"text-align: left;\">first column</th>\n<th style=\"text-align: right;\">second column</th>\n</tr>\n</thead>\n<tbody>\n<tr class=\"odd\">\n<td style=\"text-align: left;\">first row</td>\n<td style=\"text-align: right;\">1</td>\n</tr>\n<tr class=\"even\">\n<td style=\"text-align: left;\">second row</td>\n<td style=\"text-align: right;\">1000</td>\n</tr>\n</tbody>\n</table>"
@@ -127,8 +133,10 @@ renderPandoc f (Pandoc meta bs)
 -- | output can be native pandoc, text that replaces or inserts into the output code block, or Html.
 data Output = Native [Block] | Replace Text | Fence Text | RawHtml Text
 
+-- | a 'Map' of output keyed off of defined section names in the receiving file
 type OutputMap = Map Text Output
 
+-- | Insert a block into the 'OutputMap'
 insertOutput :: OutputMap -> Block -> [Block]
 insertOutput m b = case b of
   b'@(CodeBlock (id', classes, kv) _) ->
@@ -175,6 +183,7 @@ runOutput (fi, flavi) (fo, flavo) out = do
   either (pure . Left) (\t -> writeFile fo t >> pure (Right ())) w
 
 -- | create a simple table from Inlines
+--
 -- >>> defaultTable bootTableAttr (B.fromList [Str "an",Space,Str "example",Space,Str "table"]) [(AlignLeft, ColWidthDefault), (AlignRight, ColWidthDefault)] (B.fromList <$> [[Str "first",Space,Str "column"], [Str "second",Space,Str "column"]]) (fmap B.fromList <$> [[[Str "first",Space,Str "row"], [Str "1"]], [[Str "second",Space,Str "row"], [Str "1000"]]]) == singleton table1
 -- True
 defaultTable :: Attr -> Inlines -> [ColSpec] -> [Inlines] -> [[Inlines]] -> Blocks
@@ -211,6 +220,7 @@ hask :: Maybe Text -> Text -> Inlines
 hask name t = codeWith (fromMaybe mempty name, ["sourceCode","literate","haskell"], []) t
 
 -- | create a badge link
+--
 -- >>> B.toList $ badge "Build Status" "https://travis-ci.org/tonyday567/readme-lhs.svg" "https://travis-ci.org/tonyday567/readme-lhs"
 -- [Link ("",[],[]) [Image ("",[],[]) [Str "Build Status"] ("https://travis-ci.org/tonyday567/readme-lhs.svg","")] ("https://travis-ci.org/tonyday567/readme-lhs","")]
 badge :: Text -> Text -> Text -> Inlines

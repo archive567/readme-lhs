@@ -1,11 +1,6 @@
-{-# OPTIONS_GHC -Wall #-}
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedLists #-}
+{-# LANGUAGE RebindableSyntax #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# OPTIONS_GHC -Wall #-}
 
 import NumHask.Prelude
 import Readme.Lhs
