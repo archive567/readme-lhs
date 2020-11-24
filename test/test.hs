@@ -11,6 +11,5 @@ import Readme.Lhs
 main :: IO ()
 main =
   doctest
-  [ "src/Readme/Lhs.hs",
-    "src/Data/FormatN.hs"
+  [ "src/Readme/Lhs.hs"
   ]

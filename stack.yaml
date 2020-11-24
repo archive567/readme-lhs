@@ -1,12 +1,16 @@
 resolver: nightly-2020-11-19
 
 extra-deps:
-  # - numhask-0.7.0.0
-  - git: https://github.com/tonyday567/numhask.git
-    commit: 7653400a026835659c1b6a8914eb83bb84260a7f
+  - numhask-0.7.0.0
+  - protolude-0.3.0
+  - random-1.2.0
+  - splitmix-0.1.0.3
+
   # pandoc
   - pandoc-2.11.2
   - citeproc-0.2
   - commonmark-0.1.1.2
   - commonmark-extensions-0.2.0.4
   - commonmark-pandoc-0.2.0.1
+
+allow-newer: true

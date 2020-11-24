@@ -68,12 +68,9 @@ library
     numhask >= 0.7 && < 0.8,
     pandoc >= 2.10,
     pandoc-types >= 1.21,
-    scientific >= 0.3,
-    tdigest >= 0.2,
     text >= 1.2,
     transformers >= 0.5
   exposed-modules:
-    Data.FormatN
     Readme.Convert
     Readme.Lhs
   other-modules:
@@ -101,7 +98,7 @@ test-suite test
   main-is: test.hs
   hs-source-dirs:
       test
-  default-extensions: NoImplicitPrelude UnicodeSyntax NegativeLiterals OverloadedStrings
+  default-extensions:
   build-depends:
     base >=4.7 && <5,
     doctest >= 0.16 && < 0.18,
