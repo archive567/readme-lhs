@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RebindableSyntax #-}
 {-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -fno-warn-name-shadowing #-}
 
 -- | Helpers for converting between lhs and hs files.
 --

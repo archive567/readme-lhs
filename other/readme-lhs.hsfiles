@@ -12,19 +12,9 @@ stack build --test --file-watch
 ```
 
 {-# START_FILE app/{{name}}.hs #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NegativeLiterals #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RebindableSyntax #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wall #-}
 
 import NumHask.Prelude
@@ -80,10 +70,6 @@ executable {{name}}
     {{name}}
   default-language: Haskell2010
   default-extensions:
-    NegativeLiterals
-    NoImplicitPrelude
-    OverloadedStrings
-    UnicodeSyntax
   ghc-options:
     -funbox-strict-fields
     -fforce-recomp
@@ -103,10 +89,6 @@ test-suite test
     {{name}}
   default-language: Haskell2010
   default-extensions:
-    NoImplicitPrelude
-    NegativeLiterals
-    OverloadedStrings
-    UnicodeSyntax
   ghc-options:
     -Wall
     -Wcompat
@@ -193,14 +175,13 @@ script:
   esac
 
 {-# START_FILE stack.yaml #-}
-resolver: nightly-2020-06-25
+resolver: nightly-2020-11-19
 
 packages:
   - .
 
 extra-deps:
   - numhask-0.7.0.0
-  - numhask-space-0.7.0
 
 {-# START_FILE hie.yaml #-}
 cradle:
