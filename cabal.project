@@ -1,0 +1,10 @@
+packages: readme-lhs.cabal
+
+-- if doctests seem broken, uncomment:
+-- See https://github.com/haskell/cabal/issues/6087
+-- write-ghc-environment-files: always
+
+allow-newer: pandoc:random
+
+-- Might be helpful when hackage doesn't build properly...
+keep-going: True

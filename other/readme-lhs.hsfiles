@@ -2,9 +2,9 @@
 {{name}}
 ===
 
-[![Build Status](https://travis-ci.org/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}.svg)](https://travis-ci.org/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}) [![Hackage](https://img.shields.io/hackage/v/{{name}}.svg)](https://hackage.haskell.org/package/{{name}}) [![lts](https://www.stackage.org/package/{{name}}/badge/lts)](http://stackage.org/lts/package/{{name}}) [![nightly](https://www.stackage.org/package/{{name}}/badge/nightly)](http://stackage.org/nightly/package/{{name}}) 
+[![Build Status](https://travis-ci.org/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}.svg)](https://travis-ci.org/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}) [![Hackage](https://img.shields.io/hackage/v/{{name}}.svg)](https://hackage.haskell.org/package/{{name}})
 
-flow
+develop
 ----
 
 ```
@@ -52,10 +52,7 @@ library
     -Wredundant-constraints
   build-depends:
     base >=4.7 && <5,
-    lens >= 4 && < 5,
     numhask >= 0.7 && < 0.8,
-    numhask-space >= 0.7 && < 0.8,
-    text >= 1.2 && < 1.3,
   exposed-modules:
 
   other-modules:
@@ -84,7 +81,7 @@ test-suite test
     test
   build-depends:
     base >=4.7 && <5,
-    doctest,
+    doctest >= 0.16 && < 0.18,
     numhask >= 0.7 && < 0.8,
     {{name}}
   default-language: Haskell2010
@@ -99,8 +96,9 @@ test-suite test
 {-# START_FILE .gitignore #-}
 /.stack-work/
 /dist-newstyle/
-TAGS
 stack.yaml.lock
+**/.DS_Store
+cabal.project.local
 
 {-# START_FILE .projectile #-}
 
@@ -182,6 +180,9 @@ packages:
 
 extra-deps:
   - numhask-0.7.0.0
+  - protolude-0.3.0
+  - random-1.2.0
+  - splitmix-0.1.0.3
 
 {-# START_FILE hie.yaml #-}
 cradle:
@@ -194,8 +195,9 @@ cradle:
       component: "{{name}}:test:{{name}}"
 
 {-# START_FILE test/test.hs #-}
+{-# LANGUAGE NegativeLiterals #-}
+{-# LANGUAGE RebindableSyntax #-}
 {-# OPTIONS_GHC -Wall #-}
-{-# OPTIONS_GHC -fno-warn-unused-imports #-}
 
 module Main where
 
@@ -207,3 +209,15 @@ main =
   doctest
   [
   ]
+
+{-# START_FILE cabal.project #-}
+packages: {{name}}.cabal
+
+-- if doctests seem broken, uncomment:
+-- See https://github.com/haskell/cabal/issues/6087
+-- write-ghc-environment-files: always
+
+allow-newer: random
+
+-- Might be helpful when hackage doesn't build properly...
+keep-going: True
