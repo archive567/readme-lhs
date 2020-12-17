@@ -1,6 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE RebindableSyntax #-}
+{-# LANGUAGE StrictData #-}
 
 -- | Help for inserting programming output into an lhs or md-style file.
 module Readme.Lhs

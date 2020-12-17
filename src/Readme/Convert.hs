@@ -1,6 +1,7 @@
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RebindableSyntax #-}
+{-# LANGUAGE StrictData #-}
 {-# OPTIONS_GHC -Wall #-}
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
 
@@ -25,8 +26,9 @@ where
 
 import qualified Control.Foldl as L
 import qualified Data.Attoparsec.Text as A
-import qualified Data.List as List
-import NumHask.Prelude hiding (print)
+import qualified Data.Sequence as Seq
+import Data.Sequence
+import NumHask.Prelude as P hiding (print)
 
 -- | Type of file section
 data Section = Code | Comment deriving (Show, Eq)
@@ -45,35 +47,28 @@ bird =
 parseLhs :: [Text] -> [Block]
 parseLhs text = L.fold (L.Fold step begin done) $ A.parseOnly bird <$> text
   where
-    begin = (Block Code [], [])
-    done (Block _ [], out) = unlit' out
-    done (block, out) = unlit' $ out <> [block]
+    begin = (Block Code [], Seq.empty)
+    done (Block _ [], out) = toList $ unlit' out
+    done (block, out) = toList $ unlit' $ out :|> block
     unlit' ss =
       ( \(Block s ts) ->
           case s of
-            Comment -> Block s (unlit ts)
+            Comment -> Block s (toList $ unlit $ Seq.fromList ts)
             Code -> Block s ts
       )
-        <$> ss
+      <$> ss
     step x (Left _) = x
     step (Block s ts, out) (Right (Block s' ts')) =
       if
         | s == s' -> (Block s (ts <> ts'), out)
-        | otherwise -> case ts of
-          [] -> (Block s' ts, out)
-          _ -> (Block s' ts', out <> [Block s ts])
-    unlit [] = [""]
-    unlit [""] = [""]
-    unlit xs =
-      if
-        | (head xs == Just "") && (head (reverse xs) == Just "") ->
-          List.init $ List.tail xs
-        | (head xs == Just "") ->
-          List.tail xs
-        | (head (reverse xs) == Just "") ->
-          List.init xs
-        | otherwise ->
-          xs
+        | P.null ts -> (Block s' ts, out)
+        | True -> (Block s' ts', out :|> Block s ts)
+    unlit :: Seq Text -> Seq Text
+    unlit Empty = Seq.singleton ""
+    unlit (("" :<| xs) :|> "") = xs
+    unlit ("" :<| xs) = xs
+    unlit (xs :|> "") = xs
+    unlit xs = xs
 
 -- | Convert a block of code into lhs.
 printLhs :: [Block] -> [Text]
@@ -82,16 +77,18 @@ printLhs ss =
     ( \(Block s ts) ->
         case s of
           Code -> ("> " <>) <$> ts
-          Comment -> lit ts
+          Comment -> toList $ lit (Seq.fromList ts)
     )
       <$> ss
   where
-    lit [] = [""]
-    lit [""] = [""]
-    lit xs =
-      bool [""] [] (head xs == Just "")
-        <> xs
-        <> bool [""] [] (List.last xs == "")
+    lit :: Seq Text -> Seq Text
+    lit Empty = Seq.singleton ""
+    lit ("" :<| Empty) = Seq.singleton ""
+    lit (("" :<| Empty) :|> "") = Seq.singleton ""
+    lit (("" :<| xs) :|> "") = xs
+    lit ("" :<| xs) = xs
+    lit (xs :|> "") = xs
+    lit xs = xs
 
 -- | Parse a .hs
 --
@@ -132,14 +129,12 @@ parseHs text = L.fold (L.Fold step begin done) $ A.parseOnly normal <$> text
     step x (Left _) = x
     step (Block s ts, out) (Right (Just (this, next), ts')) =
       if
-        | null (ts <> ts') -> (Block next [], out)
+        | P.null (ts <> ts') -> (Block next [], out)
         | this == s && next == s -> (Block s (ts <> ts'), out)
         | this /= s -> (Block this ts', out <> [Block s ts])
-        | otherwise -> (Block next [], out <> [Block s (ts <> ts')])
+        | True -> (Block next [], out <> [Block s (ts <> ts')])
     step (Block s ts, out) (Right (Nothing, ts')) =
-      if
-        | null (ts <> ts') -> (Block s [], out)
-        | otherwise -> (Block s (ts <> ts'), out)
+      (Block s (ts <> ts'), out)
 
 -- | Print a block of code to hs style
 printHs :: [Block] -> [Text]
