@@ -13,7 +13,6 @@ stack build --test --file-watch
 
 {-# START_FILE app/{{name}}.hs #-}
 {-# LANGUAGE NegativeLiterals #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RebindableSyntax #-}
 {-# OPTIONS_GHC -Wall #-}
 
@@ -50,6 +49,8 @@ library
     -Wincomplete-record-updates
     -Wincomplete-uni-patterns
     -Wredundant-constraints
+    -fwrite-ide-info
+    -hiedir=.hie
   build-depends:
     base >=4.7 && <5,
     numhask >= 0.7 && < 0.8,
@@ -73,6 +74,8 @@ executable {{name}}
     -threaded
     -rtsopts
     -with-rtsopts=-N
+    -fwrite-ide-info
+    -hiedir=.hie
 
 test-suite test
   type: exitcode-stdio-1.0
@@ -92,6 +95,8 @@ test-suite test
     -Wincomplete-record-updates
     -Wincomplete-uni-patterns
     -Wredundant-constraints
+    -fwrite-ide-info
+    -hiedir=.hie
 
 {-# START_FILE .gitignore #-}
 /.stack-work/
@@ -173,16 +178,14 @@ script:
   esac
 
 {-# START_FILE stack.yaml #-}
-resolver: nightly-2020-11-19
+resolver: nightly-2021-02-12
 
 packages:
   - .
 
 extra-deps:
-  - numhask-0.7.0.0
-  - protolude-0.3.0
+  - numhask-0.7.1.0
   - random-1.2.0
-  - splitmix-0.1.0.3
 
 {-# START_FILE hie.yaml #-}
 cradle:
